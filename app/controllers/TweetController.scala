@@ -34,35 +34,15 @@ object TweetController extends Controller {
       val tweets =
         Tweet
           .filter(_.userId === userId.toInt)
-          .innerJoin(TwiUser).on(_.userId === _.id)
-          .map { t =>
-            (t._2.name, t._1)
+          .innerJoin(TwiUser).on { (t, u) =>
+            t.userId === u.id
+          }
+          .map { case (t, u) =>
+            (u.name, t)
           }
           .sortBy(_._2.insTime.desc)
           .list
 
-      Ok(views.html.tweet.list(tweets))
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
-  }
-
-  /**
-   * 一覧表示(フォロー中の人のみ)
-   */
-  def follow = DBAction { implicit rs =>
-    rs.session.get("userId").map { userId =>
-      val tweets =
-        Tweet
-          .innerJoin(Follow).on(_.userId === _.followUserId)
-          .filter(_._2.userId === userId.toInt)
-          .map(_._1)
-          .innerJoin(TwiUser).on(_.userId === _.id)
-          .map { t =>
-            (t._2.name, t._1)
-          }
-          .sortBy(_._2.insTime.desc)
-          .list
       Ok(views.html.tweet.list(tweets))
     }.getOrElse {
       Redirect(routes.Application.index)
@@ -74,17 +54,25 @@ object TweetController extends Controller {
    */
   def all = DBAction { implicit rs =>
     rs.session.get("userId").map { userId =>
+      val userIdInt = userId.toInt
       val tweets =
         Tweet
-          .innerJoin(Follow).on(_.userId === _.followUserId)
-          .filter(_._2.userId === userId.toInt)
-          .map(_._1)
-          .innerJoin(TwiUser).on(_.userId === _.id)
-          .map { t =>
-            (t._2.name, t._1)
+          .innerJoin(TwiUser).on { (t, u) =>
+            t.userId === u.id
           }
-          .sortBy(_._2.insTime.desc)
+          .filter { case (t, u) =>
+            (t.userId in
+              Follow
+                .filter(_.userId === userIdInt)
+                .map(_.followUserId)
+              ) || (t.userId === userIdInt)
+          }
+          .map { case(t, u) =>
+            (u.name, t)
+          }
+          .sortBy(_._2.insTime desc)
           .list
+
       Ok(views.html.tweet.list(tweets))
     }.getOrElse {
       Redirect(routes.Application.index)
