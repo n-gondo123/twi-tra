@@ -1,0 +1,16 @@
+@(tweetForm: Form[controllers.TweetController.TweetForm], title: String)(implicit session: Session)
+
+@import helper._
+
+@main(title) {
+        @form(action=routes.TweetController.create, 'class -> "container", 'role -> "form"){
+        <fieldset>
+            <div class="form-group">
+                @textarea(tweetForm("content"), '_label -> "ツイートしてください", 'cols -> "80", 'rows -> "5")
+            </div>
+            <div>
+                <input type="submit" value="ツイート" class="btn btn-success">
+            </div>
+        </fieldset>
+    }
+}

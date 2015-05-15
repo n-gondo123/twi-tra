@@ -1,0 +1,27 @@
+@(tweets: List[(String, models.Tables.TweetRow)])(implicit session: Session)
+
+@main("ツイート一覧") {
+
+<div class="col-xs-6">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>名前</th>
+        <th>内容</th>
+        <th>登録日時</th>
+        @*<th>削除</th>*@
+      </tr>
+    </thead>
+    <tbody>
+    @tweets.map { tweet =>
+      <tr>
+        <td>@tweet._1</td>
+        <td>@tweet._2.content</td>
+        <td>@tweet._2.insTime</td>
+        @*<td><a href="@routes.TweetController.remove(tweet._2.id)">削除</a></td>*@
+      </tr>
+    }
+    </tbody>
+  </table>
+</div>
+}

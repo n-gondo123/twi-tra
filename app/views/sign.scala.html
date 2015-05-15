@@ -1,0 +1,22 @@
+@(signForm: Form[controllers.SignController.SignForm], title: String)(implicit session: Session)
+
+@import helper._
+
+@main("トップ") {
+    <div>
+@*//        @form(signForm("id").value.map(x => routes.SignController.signIn), 'class -> "container", 'role -> "form"){*@
+        @form(action = routes.SignController.signIn, 'class -> "container", 'role -> "form"){
+            <fieldset>
+                <div class="form-group">
+                    @inputText(signForm("name"), '_label -> "ユーザー名")
+                </div>
+                <div class="form-group">
+                    @inputPassword(signForm("password"), '_label -> "パスワード")
+                </div>
+                <div>
+                    <input type="submit" value="サインイン" class="btn btn-success">
+                </div>
+            </fieldset>
+        }
+    </div>
+}
