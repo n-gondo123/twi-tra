@@ -1,10 +1,12 @@
-@(signForm: Form[controllers.SignController.SignForm], title: String)(implicit session: Session)
+@(signForm: Form[controllers.SignController.SignForm], message: String)(implicit session: Session)
 
 @import helper._
 
 @main("トップ") {
     <div>
-@*//        @form(signForm("id").value.map(x => routes.SignController.signIn), 'class -> "container", 'role -> "form"){*@
+        @if(!message.isEmpty) {
+            <div class="alert alert-danger">@message</div>
+        }
         @form(action = routes.SignController.signIn, 'class -> "container", 'role -> "form"){
             <fieldset>
                 <div class="form-group">

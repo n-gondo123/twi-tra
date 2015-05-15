@@ -4,6 +4,7 @@ import play.api.mvc._
 import play.api.db.slick._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.Crypto._
 
 import models.Tables._
 import profile.simple._
@@ -16,9 +17,9 @@ object TwiUserController extends Controller {
   // formのデータとケースクラスの変換を行う
   val userForm = Form(
     mapping(
-      "name" -> nonEmptyText(maxLength = 20),
+      "name" -> nonEmptyText(minLength = 3, maxLength = 20),
       "email" -> nonEmptyText(maxLength = 100),
-      "password" -> nonEmptyText(maxLength = 20)
+      "password" -> nonEmptyText(minLength = 3, maxLength = 20)
     )(UserForm.apply)(UserForm.unapply)
   )
 
@@ -64,15 +65,8 @@ object TwiUserController extends Controller {
     } else {
       "アカウント登録"
     }
-//    val (form, title) = rs.session.get("userId").map { userId =>
-//      val user = TwiUser.filter(_.id === userId.toInt).first
-//      userForm.fill(UserForm(user.name, user.email, user.password))
-//      (userForm, "アカウント編集")
-//    }.getOrElse {
-//      (userForm, "アカウント登録")
-//    }
 
-    Ok(views.html.user.edit(form, title))
+    Ok(views.html.user.edit(form, title, ""))
   }
 
   /**
@@ -80,12 +74,22 @@ object TwiUserController extends Controller {
    */
   def create = DBAction.transaction { implicit rs =>
     userForm.bindFromRequest.fold(
-      error => BadRequest(views.html.user.edit(error, "hoge")),
+      error => BadRequest(views.html.user.edit(error, "アカウント登録", "入力内容に誤りがあります")),
       form => {
-        val user = TwiUserRow(3, form.name, form.email, form.password, null, null)
-        TwiUser.insert(user)
-
-        Redirect(routes.SignController.index)
+        val reqForm = userForm.fill(UserForm(form.name, form.email, form.password))
+        val list = TwiUser.filter(t => (t.name === form.name) || (t.email === form.email)).list
+        if (list.nonEmpty) {
+          if (list.count(_.name == form.name) > 0) {
+            Ok(views.html.user.edit(reqForm, "アカウント登録", "その名前はすでに登録されています"))
+          } else {
+            Ok(views.html.user.edit(reqForm, "アカウント登録", "そのメールアドレスはすでに登録されています"))
+          }
+        } else {
+          val password = encryptAES(form.password)
+          val user = TwiUserRow(0, form.name, form.email, password, null, null)
+          TwiUser.insert(user)
+          Redirect(routes.SignController.index)
+        }
       }
     )
   }
@@ -95,23 +99,29 @@ object TwiUserController extends Controller {
    */
   def update = DBAction.transaction { implicit rs =>
     userForm.bindFromRequest.fold(
-      error => BadRequest(views.html.user.edit(error, "hoge")),
+      error => BadRequest(views.html.user.edit(error, "アカウント編集", "入力内容に誤りがあります")),
       form => {
-        val userId = rs.session.get("userId").get.toInt
-        val user = TwiUserRow(userId, form.name, form.email, form.password, null, null)
-        TwiUser.filter(_.id === userId).update(user)
+        val userIdInt = rs.session.get("userId").get.toInt
 
-        Redirect(routes.TwiUserController.list)
+        val reqForm = userForm.fill(UserForm(form.name, form.email, form.password))
+        val list =
+          TwiUser
+            .filter(t => (t.name === form.name) || (t.email === form.email))
+            .filterNot(_.id === userIdInt)
+            .list
+        if (list.nonEmpty) {
+          if (list.count(_.name == form.name) > 0) {
+            Ok(views.html.user.edit(reqForm, "アカウント登録", "その名前はすでに登録されています"))
+          } else {
+            Ok(views.html.user.edit(reqForm, "アカウント登録", "そのメールアドレスはすでに登録されています"))
+          }
+        } else {
+          val password = encryptAES(form.password)
+          val self = TwiUserRow(userIdInt, form.name, form.email, password, null, null)
+          TwiUser.filter(_.id === userIdInt).update(self)
+          Redirect(routes.SignController.index)
+        }
       }
     )
   }
-//
-//  /**
-//   * 削除実行
-//   */
-//  def remove(id: Long) = DBAction.transaction { implicit rs =>
-//    Users.filter(t => t.id === id.bind).delete
-//
-//    Redirect(routes.UserController.list)
-//  }
 }
