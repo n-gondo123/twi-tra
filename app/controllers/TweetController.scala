@@ -34,11 +34,11 @@ object TweetController extends Controller {
       val tweets =
         Tweet
           .filter(_.userId === userId.toInt)
-          .sortBy(_.insTime.desc)
           .innerJoin(TwiUser).on(_.userId === _.id)
           .map { t =>
             (t._2.name, t._1)
           }
+          .sortBy(_._2.insTime.desc)
           .list
 
       Ok(views.html.tweet.list(tweets))
@@ -57,11 +57,11 @@ object TweetController extends Controller {
           .innerJoin(Follow).on(_.userId === _.followUserId)
           .filter(_._2.userId === userId.toInt)
           .map(_._1)
-          .sortBy(_.insTime.desc)
           .innerJoin(TwiUser).on(_.userId === _.id)
           .map { t =>
-          (t._2.name, t._1)
-        }
+            (t._2.name, t._1)
+          }
+          .sortBy(_._2.insTime.desc)
           .list
       Ok(views.html.tweet.list(tweets))
     }.getOrElse {
@@ -79,11 +79,11 @@ object TweetController extends Controller {
           .innerJoin(Follow).on(_.userId === _.followUserId)
           .filter(_._2.userId === userId.toInt)
           .map(_._1)
-          .sortBy(_.insTime.desc)
           .innerJoin(TwiUser).on(_.userId === _.id)
           .map { t =>
             (t._2.name, t._1)
           }
+          .sortBy(_._2.insTime.desc)
           .list
       Ok(views.html.tweet.list(tweets))
     }.getOrElse {
