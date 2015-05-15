@@ -6,7 +6,7 @@ object Application extends Controller {
 
   def index = Action { implicit rs =>
     rs.session.get("userId").map { user =>
-      Redirect(routes.TweetController.follow)
+      Redirect(routes.TweetController.all)
     }.getOrElse {
       Redirect(routes.SignController.index)
     }
@@ -17,7 +17,7 @@ object Application extends Controller {
    */
   def home = Action { implicit rs =>
     rs.session.get("userId").map { user =>
-      Redirect(routes.TweetController.follow)
+      Redirect(routes.TweetController.all)
     }.getOrElse {
       Redirect(routes.SignController.index)
     }
