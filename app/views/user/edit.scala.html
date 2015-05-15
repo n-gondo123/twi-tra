@@ -1,15 +1,18 @@
-@(userForm: Form[controllers.TwiUserController.UserForm], title: String)(implicit session: Session)
+@(userForm: Form[controllers.TwiUserController.UserForm], title: String, message : String)(implicit session: Session)
 
 @import helper._
 
 @main(title) {
+    @if(!message.isEmpty) {
+        <div class="alert alert-danger">@message</div>
+    }
     @form(session.get("userId").map(x => routes.TwiUserController.update).getOrElse(routes.TwiUserController.create), 'class -> "container", 'role -> "form"){
         <fieldset>
             <div class="form-group">
                 @inputText(userForm("name"), '_label -> "ユーザー名")
             </div>
             <div class="form-group">
-                @inputText(userForm("email"), '_label -> "E-Mail")
+                @inputText(userForm("email"), 'type -> "email", '_label -> "E-Mail")
             </div>
             <div class="form-group">
                 @inputPassword(userForm("password"), '_label -> "パスワード")

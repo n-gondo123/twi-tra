@@ -1,35 +1,35 @@
 @(users: List[(models.Tables.TwiUserRow, Boolean, Boolean)])(implicit session: Session)
 
 @main("ユーザ一覧") {
-  <div class="col-xs-5">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>名前</th>
-                <th>フォロー／解除</th>
-                <th>被フォロー</th>
-            </tr>
-        </thead>
-        <tbody>
-        @* ユーザの一覧をループで出力 *@
-        @users.map { user =>
-            <tr>
-                <td>@user._1.name</td>
-                <td>
-                    @if(user._2) {
-                        <a href="@routes.FollowController.remove(user._1.id)">フォロー解除</a>
-                    } else {
-                        <a href="@routes.FollowController.create(user._1.id)">フォローする</a>
-                    }
-                </td>
-                <td>
-                    @if(user._3) {
-                        フォローされています
-                    }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-  </div>
+<div class="col-xs-5">
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>名前</th>
+            <th>フォロー／解除</th>
+            <th>被フォロー</th>
+        </tr>
+    </thead>
+    <tbody>
+    @* ユーザの一覧をループで出力 *@
+    @users.map { user =>
+        <tr>
+            <td>@user._1.name</td>
+            <td>
+                @if(user._2) {
+                    <a href="@routes.FollowController.remove(user._1.id)">フォロー解除</a>
+                } else {
+                    <a href="@routes.FollowController.create(user._1.id)">フォローする</a>
+                }
+            </td>
+            <td>
+                @if(user._3) {
+                    フォローされています
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
 }

@@ -23,7 +23,7 @@ GET         /sign/signOut           controllers.SignController.signOut
 # Mapping to /user/list
 GET         /user/list           controllers.TwiUserController.list
 
-# Mapping to /user/edit or /user/edit?id=<number>
+# Mapping to /user/edit or /user/edit
 GET         /user/edit           controllers.TwiUserController.edit
 
 # Mapping to /user/create
