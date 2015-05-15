@@ -6,7 +6,7 @@
     @if(!message.isEmpty) {
         <div class="alert alert-danger">@message</div>
     }
-    @form(session.get("userId").map(x => routes.TwiUserController.update).getOrElse(routes.TwiUserController.create), 'class -> "container", 'role -> "form"){
+    @form(session.get("userId").map(x => routes.TwiUserController.update).getOrElse(routes.TwiUserController.create), 'novalidate -> "", 'class -> "container", 'role -> "form"){
         <fieldset>
             <div class="form-group">
                 @inputText(userForm("name"), '_label -> "ユーザー名")

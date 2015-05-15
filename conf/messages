@@ -1,5 +1,5 @@
 
 #constraint.required=必須
-error.required=必須項目です。
+error.required=必須項目です
 error.minLength={0}文字以上で入力してください
 error.maxLength={0}文字以内で入力してください
