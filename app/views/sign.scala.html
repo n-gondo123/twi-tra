@@ -7,7 +7,7 @@
         @if(!message.isEmpty) {
             <div class="alert alert-danger">@message</div>
         }
-        @form(action = routes.SignController.signIn, 'class -> "container", 'role -> "form"){
+        @form(action = routes.SignController.authenticate(), 'class -> "container", 'role -> "form"){
             <fieldset>
                 <div class="form-group">
                     @inputText(signForm("name"), '_label -> "ユーザー名")

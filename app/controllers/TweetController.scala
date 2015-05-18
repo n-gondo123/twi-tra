@@ -52,31 +52,27 @@ object TweetController extends Controller {
   /**
    * 一覧表示(フォロワー含む)
    */
-  def all = DBAction { implicit rs =>
-    rs.session.get("userId").map { userId =>
-      val userIdInt = userId.toInt
-      val tweets =
-        Tweet
-          .innerJoin(TwiUser).on { (t, u) =>
-            t.userId === u.id
-          }
-          .filter { case (t, u) =>
-            (t.userId in
-              Follow
-                .filter(_.userId === userIdInt)
-                .map(_.followUserId)
-              ) || (t.userId === userIdInt)
-          }
-          .map { case(t, u) =>
-            (u.name, t)
-          }
-          .sortBy(_._2.insTime desc)
-          .list
+  def all(user: TwiUserRow) = DBAction { implicit rs =>
+    val userIdInt = user.id
+    val tweets =
+      Tweet
+        .innerJoin(TwiUser).on { (t, u) =>
+          t.userId === u.id
+        }
+        .filter { case (t, u) =>
+          (t.userId in
+            Follow
+              .filter(_.userId === userIdInt)
+              .map(_.followUserId)
+            ) || (t.userId === userIdInt)
+        }
+        .map { case(t, u) =>
+          (u.name, t)
+        }
+        .sortBy(_._2.insTime desc)
+        .list
 
-      Ok(views.html.tweet.list(tweets))
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
+    Ok(views.html.tweet.list(tweets))
   }
 
   /**

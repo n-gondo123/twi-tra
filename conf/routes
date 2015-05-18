@@ -15,7 +15,7 @@ GET         /home                controllers.Application.home
 GET         /sign                    controllers.SignController.index
 
 # Mapping to /sign/signIn
-POST         /sign/signIn           controllers.SignController.signIn
+POST         /sign/signIn           controllers.SignController.authenticate
 
 # Mapping to /sign/signOut
 GET         /sign/signOut           controllers.SignController.signOut
