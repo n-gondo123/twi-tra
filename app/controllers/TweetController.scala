@@ -1,13 +1,17 @@
 package controllers
 
+import controllers.Role.NormalUser
+import jp.t2v.lab.play2.auth.AuthElement
 import models.Tables._
 import models.Tables.profile.simple._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.db.slick._
 import play.api.mvc._
+import play.api.Play.current
 
-object TweetController extends Controller {
+
+object TweetController extends Controller with AuthElement with AuthConfigImpl {
 
   // フォームの値を格納する
   case class TweetForm(content: String)
@@ -22,18 +26,19 @@ object TweetController extends Controller {
   /**
    * ツイートフォーム
    */
-  def edit = Action { implicit rs =>
-    Ok(views.html.tweet.edit(tweetForm, "Please Input"))
+  def edit = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    Ok(views.html.tweet.edit(tweetForm, "ツイートフォーム"))
   }
 
   /**
    * 一覧表示(自分のみ)
    */
-  def list = DBAction { implicit rs =>
-    rs.session.get("userId").map { userId =>
+  def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    DB.withSession { implicit session =>
+      val user = loggedIn
       val tweets =
         Tweet
-          .filter(_.userId === userId.toInt)
+          .filter(_.userId === user.id)
           .innerJoin(TwiUser).on { (t, u) =>
             t.userId === u.id
           }
@@ -44,17 +49,15 @@ object TweetController extends Controller {
           .list
 
       Ok(views.html.tweet.list(tweets))
-    }.getOrElse {
-      Redirect(routes.Application.index)
     }
   }
 
   /**
    * 一覧表示(フォロワー含む)
    */
-  def all = DBAction { implicit rs =>
-    rs.session.get("userId").map { userId =>
-      val userIdInt = userId.toInt
+  def all(user: TwiUserRow) = {
+    DB.withSession { implicit session =>
+      val userIdInt = user.id
       val tweets =
         Tweet
           .innerJoin(TwiUser).on { (t, u) =>
@@ -67,29 +70,28 @@ object TweetController extends Controller {
                 .map(_.followUserId)
               ) || (t.userId === userIdInt)
           }
-          .map { case(t, u) =>
+          .map { case (t, u) =>
             (u.name, t)
           }
-          .sortBy(_._2.insTime desc)
+          .sortBy(_._2.insTime.desc)
           .list
-
-      Ok(views.html.tweet.list(tweets))
-    }.getOrElse {
-      Redirect(routes.Application.index)
+      tweets
     }
   }
 
   /**
    * 登録実行
    */
-  def create = DBAction.transaction { implicit rs =>
+  def create = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     tweetForm.bindFromRequest.fold(
       error => BadRequest(views.html.tweet.edit(error, "hoge")),
       form => {
-        val tweet = TweetRow(0, rs.session.get("userId").get.toInt, form.content, null, null)
-        Tweet.insert(tweet)
-
-        Redirect(routes.TweetController.edit)
+        val user = loggedIn
+        DB.withSession { implicit session =>
+          val tweet = TweetRow(0, user.id, form.content, null, null)
+          Tweet.insert(tweet)
+        }
+        Redirect(routes.TweetController.edit())
       }
     )
   }
@@ -97,16 +99,15 @@ object TweetController extends Controller {
   /**
    * 削除実行
    */
-  def remove(id: Int) = DBAction.transaction { implicit rs =>
-    rs.session.get("userId").map { userId =>
+  def remove(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    val user = loggedIn
+    DB.withSession { implicit session =>
       Tweet
-        .filter(_.userId === userId.toInt)
+        .filter(_.userId === user.id)
         .filter(t => t.id === id.bind)
         .delete
 
-      Redirect(routes.TweetController.list)
-    }.getOrElse{
-      Redirect(routes.TweetController.list)
+      Redirect(routes.TweetController.list())
     }
   }
 }

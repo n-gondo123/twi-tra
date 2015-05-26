@@ -5,11 +5,16 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.db.slick._
 import play.api.libs.Crypto._
+import jp.t2v.lab.play2.auth.{OptionalAuthElement, LoginLogout}
 
 import models.Tables._
 import profile.simple._
 
-object SignController extends Controller {
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.Play.current
+
+object SignController extends Controller with LoginLogout with OptionalAuthElement with AuthConfigImpl {
 
   // フォームの値を格納する
   case class SignForm(name: String, password: String)
@@ -25,43 +30,55 @@ object SignController extends Controller {
   /**
    * サインインインデックス
    */
-  def index = Action { implicit rs =>
-    rs.session.get("userId").map { userId =>
-      Redirect(routes.Application.index)
+  def index = StackAction { implicit rs =>
+    loggedIn.map { logIn =>
+      Redirect(routes.Application.index())
     }.getOrElse {
       Ok(views.html.sign(signForm, ""))
     }
   }
 
   /**
-   * サインイン
+   * 認証
    */
-  def signIn = DBAction { implicit rs =>
+  def authenticate = Action.async { implicit rs =>
     signForm.bindFromRequest.fold(
-      error => BadRequest(views.html.sign(error, "入力内容に誤りがあります")),
+      error => {
+        Future.successful(BadRequest(views.html.sign(error, "入力形式が正しくありません")))
+      },
       form => {
-        val password = encryptAES(form.password)
-        val user =
-          TwiUser
-            .filter(_.name === form.name)
-            .filter(_.password === password).firstOption
-
-        if (user.isDefined) {
-          Redirect(routes.Application.index).withSession {
-            "userId" -> user.get.id.toString
-          }
+        if (validate(form)) {
+          gotoLoginSucceeded(form.name)
         } else {
-          val reqForm = signForm.fill(SignForm(form.name, form.password))
-          Ok(views.html.sign(reqForm, "ユーザー名またはパスワードが違います"))
+          Future.successful(Ok(views.html.sign(signForm.fill(form), "ユーザー名、またはパスワードが違います")))
         }
       }
     )
   }
 
   /**
+   * ログインフォームvalidation
+   */
+  def validate(signForm: SignForm) = {
+    DB.withSession { implicit session =>
+      TwiUser
+        .filter(_.name === signForm.name)
+        .firstOption
+        .exists(_.password == encryptAES(signForm.password))
+    }
+  }
+
+  /**
+   * サインイン
+   */
+  def signIn = Action { implicit rs =>
+    Ok(views.html.sign(signForm, "hoge"))
+  }
+
+  /**
    * サインアウト
    */
-  def signOut = Action {
-    Redirect(routes.SignController.index).withNewSession
+  def signOut = Action.async { implicit rs =>
+    gotoLogoutSucceeded
   }
 }

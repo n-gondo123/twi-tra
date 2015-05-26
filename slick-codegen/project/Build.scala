@@ -16,7 +16,9 @@ object myBuild extends Build {
         "com.typesafe.slick" %% "slick" % "2.1.0",
         "com.typesafe.slick" %% "slick-codegen" % "2.1.0",
         "org.slf4j" % "slf4j-nop" % "1.6.4",
-        "mysql" % "mysql-connector-java" % "5.1.33"
+        "mysql" % "mysql-connector-java" % "5.1.33",
+        "jp.t2v" %% "play2-auth"      % "0.13.2",
+        "jp.t2v" %% "play2-auth-test" % "0.13.2" % "test"
       ),
       slick <<= slickCodeGenTask, // register manual sbt command
       sourceGenerators in Compile <+= slickCodeGenTask // register automatic code generation on every compile, remove for only manual use
