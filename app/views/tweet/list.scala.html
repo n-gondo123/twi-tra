@@ -13,12 +13,12 @@
       </tr>
     </thead>
     <tbody>
-    @tweets.map { tweet =>
+    @tweets.map { case (name, tweet) =>
       <tr>
-        <td>@tweet._1</td>
-        <td>@tweet._2.content</td>
-        <td>@tweet._2.insTime</td>
-        @*<td><a href="@routes.TweetController.remove(tweet._2.id)">削除</a></td>*@
+        <td>@name</td>
+        <td>@tweet.content<td>
+        <td>@tweet.insTime</td>
+        @*<td><a href="@routes.TweetController.remove(tweet.id)">削除</a></td>*@
       </tr>
     }
     </tbody>

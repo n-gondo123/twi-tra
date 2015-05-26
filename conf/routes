@@ -33,7 +33,7 @@ POST        /user/create         controllers.TwiUserController.create
 POST        /user/update         controllers.TwiUserController.update
 
 # Mapping to /tweet/all
-GET         /tweet/all           controllers.TweetController.all
+#GET         /tweet/all           controllers.TweetController.all
 
 # Mapping to /tweet/list
 GET         /tweet/list           controllers.TweetController.list

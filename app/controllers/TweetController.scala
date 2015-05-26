@@ -1,7 +1,6 @@
 package controllers
 
 import controllers.Role.NormalUser
-import controllers.TwiUserController._
 import jp.t2v.lab.play2.auth.AuthElement
 import models.Tables._
 import models.Tables.profile.simple._

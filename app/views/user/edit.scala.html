@@ -1,4 +1,4 @@
-@(userForm: Form[controllers.TwiUserController.UserForm], title: String, message: String, user: Option[models.Tables.TwiUserRow])
+@(userForm: Form[controllers.TwiUserController.UserForm], title: String, message: String, user: Option[models.Tables.TwiUserRow]))
 
 @import helper._
 
@@ -6,9 +6,7 @@
     @if(!message.isEmpty) {
         <div class="alert alert-danger">@message</div>
     }
-@*//    @form(session.get("userId").map(x => routes.TwiUserController.update).getOrElse(routes.TwiUserController.create), 'novalidate -> "", 'class -> "container", 'role -> "form"){*@
     @form(user.map(x => routes.TwiUserController.update()).getOrElse(routes.TwiUserController.create()), 'novalidate -> "", 'class -> "container", 'role -> "form"){
-@*//        @form(routes.TwiUserController.update, 'novalidate -> "", 'class -> "container", 'role -> "form"){*@
         <fieldset>
             <div class="form-group">
                 @inputText(userForm("name"), '_label -> "ユーザー名")

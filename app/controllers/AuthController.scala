@@ -18,16 +18,8 @@ import profile.simple._
 sealed trait Role
 
 object Role {
-
   case object Administrator extends Role
   case object NormalUser extends Role
-
-//  def valueOf(value: String): Role = value match {
-//    case "Administrator" => Administrator
-//    case "NormalUser"    => NormalUser
-//    case _ => throw new IllegalArgumentException()
-//  }
-
 }
 
 // (例)
@@ -90,14 +82,13 @@ trait AuthConfigImpl extends AuthConfig {
    * 認証が失敗した場合に遷移する先を指定します。
    */
   def authenticationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] =
-    Future.successful(Redirect(routes.SignController.index()))
+    Future.successful(Unauthorized("許可されていません"))
 
   /**
    * 認可(権限チェック)が失敗した場合に遷移する先を指定します。
    */
   override def authorizationFailed(request: RequestHeader, user: User, authority: Option[Authority])(implicit context: ExecutionContext): Future[Result] = {
     Future.successful(Forbidden("権限がありません"))
-//    Future.successful(Unauthorized(views.html.common.unauthorized()))
   }
 
   /**
