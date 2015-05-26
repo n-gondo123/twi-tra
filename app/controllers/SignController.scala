@@ -24,7 +24,9 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
     mapping(
       "name" -> nonEmptyText(minLength = 3, maxLength = 20),
       "password" -> nonEmptyText(minLength = 3, maxLength = 20)
-    )(SignForm.apply)(SignForm.unapply)
+    )(SignForm.apply)(SignForm.unapply) verifying("hoge-", fields => fields match {
+      case login => validate(login)
+    })
   )
 
   /**
@@ -38,64 +40,41 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
     }
   }
 
-  def validate(signForm: SignForm) = {
-    DB.withSession { implicit session =>
-      TwiUser
-        .filter(_.name === signForm.name)
-        .firstOption
-//        .exists(_.password == encryptAES(signForm.password))
-        .map(_.password == encryptAES(signForm.password))
-        .getOrElse(false)
-    }
-  }
-
-  def signIn = Action { implicit rs =>
-    Ok(views.html.sign(signForm, "hoge"))
-  }
-
-//  /**
-//   * サインイン
-//   */
-//  def signIn = Action { implicit rs =>
-//    signForm.bindFromRequest.fold(
-//      error => BadRequest(views.html.sign(error, "入力内容に誤りがあります")),
-//      form => {
-//        val password = encryptAES(form.password)
-//        val user =
-//          TwiUser
-//            .filter(_.name === form.name)
-//            .filter(_.password === password).firstOption
-//
-//        if (user.isDefined) {
-//          Redirect(routes.Application.index).withSession {
-//            "userId" -> user.get.id.toString
-//          }
-//        } else {
-//          val reqForm = signForm.fill(SignForm(form.name, form.password))
-//          Ok(views.html.sign(reqForm, "ユーザー名またはパスワードが違います"))
-//        }
-//      }
-//    )
-//  }
-
-  /**
-   * サインアウト
-   */
-  def signOut = Action.async { implicit rs =>
-    gotoLogoutSucceeded
-  }
-
   /**
    * 認証
    */
   def authenticate = Action.async { implicit rs =>
     signForm.bindFromRequest.fold(
       error => {
-        DB.withSession { implicit session =>
-          Future.successful(BadRequest(views.html.sign(error, "入力内容に誤りがあります")))
-        }
+        Future.successful(BadRequest(views.html.sign(error, "ユーザー名、またはパスワードが違います")))
       },
       form => gotoLoginSucceeded(form.name)
     )
+  }
+
+  /**
+   * ログインフォームvalidation
+   */
+  def validate(signForm: SignForm) = {
+    DB.withSession { implicit session =>
+      TwiUser
+        .filter(_.name === signForm.name)
+        .firstOption
+        .exists(_.password == encryptAES(signForm.password))
+    }
+  }
+
+  /**
+   * サインイン
+   */
+  def signIn = Action { implicit rs =>
+    Ok(views.html.sign(signForm, "hoge"))
+  }
+
+  /**
+   * サインアウト
+   */
+  def signOut = Action.async { implicit rs =>
+    gotoLogoutSucceeded
   }
 }

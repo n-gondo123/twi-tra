@@ -22,11 +22,11 @@ object Role {
   case object Administrator extends Role
   case object NormalUser extends Role
 
-  def valueOf(value: String): Role = value match {
-    case "Administrator" => Administrator
-    case "NormalUser"    => NormalUser
-    case _ => throw new IllegalArgumentException()
-  }
+//  def valueOf(value: String): Role = value match {
+//    case "Administrator" => Administrator
+//    case "NormalUser"    => NormalUser
+//    case _ => throw new IllegalArgumentException()
+//  }
 
 }
 
@@ -48,8 +48,6 @@ trait AuthConfigImpl extends AuthConfig {
    * 認可(権限チェック)を行う際に、アクション毎に設定するオブジェクトの型です。
    * このサンプルでは例として以下のような trait を使用しています。
    */
-
-  sealed trait Role
 
   type Authority = Role
 
@@ -98,7 +96,8 @@ trait AuthConfigImpl extends AuthConfig {
    * 認可(権限チェック)が失敗した場合に遷移する先を指定します。
    */
   override def authorizationFailed(request: RequestHeader, user: User, authority: Option[Authority])(implicit context: ExecutionContext): Future[Result] = {
-    Future.successful(Forbidden("no permission"))
+    Future.successful(Forbidden("権限がありません"))
+//    Future.successful(Unauthorized(views.html.common.unauthorized()))
   }
 
   /**
@@ -113,12 +112,10 @@ trait AuthConfigImpl extends AuthConfig {
    * 任意の処理を記述してください。
    */
   def authorize(user: User, authority: Authority)(implicit ctx: ExecutionContext): Future[Boolean] = Future.successful {
-//    (user, authority) match {
-    (NormalUser.isInstanceOf[Role], authority) match {
+    (NormalUser.asInstanceOf[Role], authority) match {
       case (Administrator, _) => true
       case (NormalUser, NormalUser) => true
       case _ => false
-//      case _ => true
     }
   }
 
