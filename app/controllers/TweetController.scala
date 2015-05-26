@@ -10,6 +10,8 @@ import play.api.db.slick._
 import play.api.mvc._
 import play.api.Play.current
 
+import play.api.libs.json._
+
 
 object TweetController extends Controller with AuthElement with AuthConfigImpl {
 
@@ -22,6 +24,9 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
       "content" -> nonEmptyText(maxLength = 140)
     )(TweetForm.apply)(TweetForm.unapply)
   )
+
+  implicit val userFromReads = Json.reads[TweetForm]
+  implicit val userRowWriter = Json.writes[TweetRow]
 
   /**
    * ツイートフォーム
@@ -108,6 +113,21 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
         .delete
 
       Redirect(routes.TweetController.list())
+    }
+  }
+
+  /**
+   * Tweet用JSON API
+   */
+  def jsonCreate = StackAction (parse.json, AuthorityKey -> NormalUser) { implicit request =>
+    request.body.validate[TweetForm].map { form =>
+      DB.withSession { implicit session =>
+        val tweet = TweetRow(0, loggedIn.id, form.content, null, null)
+        Tweet.insert(tweet)
+        Ok(Json.obj("result" -> "success"))
+      }
+    }.recoverTotal { e =>
+      BadRequest(Json.obj("result" -> "failure", "error" -> JsError.toFlatJson(e)))
     }
   }
 }

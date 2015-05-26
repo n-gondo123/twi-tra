@@ -57,6 +57,6 @@ GET        /follow/remove/:id         controllers.FollowController.remove(id: In
 #POST        /user/remove/:id        controllers.UserController.remove(id: Long)
 #
 #GET         /json/list              controllers.JsonController.list
-#POST        /json/create            controllers.JsonController.create
+POST        /json/tweet/create            controllers.TweetController.jsonCreate
 #POST        /json/update            controllers.JsonController.update
 #POST        /json/remove/:id        controllers.JsonController.remove(id: Long)

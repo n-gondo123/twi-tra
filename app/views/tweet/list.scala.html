@@ -1,6 +1,18 @@
 @(tweets: List[(String, models.Tables.TweetRow)])
 
 @main("ツイート一覧") {
+<div id="tweet-form">
+    <form action="@routes.TweetController.create()" class="container" role="form">
+        <fieldset>
+            <div class="form-group">
+                <textarea cols="80" rows="5" v-model="form.content"></textarea>
+            </div>
+            <div>
+                <input type="button" value="ツイート" class="btn btn-success" v-attr="disabled: form.content.length === 0" v-on="click: onClick">
+            </div>
+        </fieldset>
+    </form>
+</div>
 
 <div class="col-xs-10">
   <table class="table table-hover">

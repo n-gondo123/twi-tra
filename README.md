@@ -18,7 +18,7 @@ slickでモデルを生成
 ```
 # in root
 $ cd slick-codegen
-$ ./sbt.sh slick-codegen
+$ ./sbt.sh gen-tables
 ```
 
 実行
