@@ -2,7 +2,7 @@
 
 @import helper._
 
-@main(title) {
+@main(title, user.isDefined) {
     @if(!message.isEmpty) {
         <div class="alert alert-danger">@message</div>
     }
