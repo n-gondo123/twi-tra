@@ -4,13 +4,12 @@ import controllers.Role.NormalUser
 import jp.t2v.lab.play2.auth.AuthElement
 import models.Tables._
 import models.Tables.profile.simple._
-import play.api.data.Forms._
-import play.api.data._
 import play.api.db.slick._
 import play.api.mvc._
 import play.api.Play.current
 
 object FollowController extends Controller with AuthElement with AuthConfigImpl {
+
   /**
    * 登録実行
    */

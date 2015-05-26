@@ -24,9 +24,7 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
     mapping(
       "name" -> nonEmptyText(minLength = 3, maxLength = 20),
       "password" -> nonEmptyText(minLength = 3, maxLength = 20)
-    )(SignForm.apply)(SignForm.unapply) verifying("hoge-", fields => fields match {
-      case login => validate(login)
-    })
+    )(SignForm.apply)(SignForm.unapply) verifying("ユーザー名、またはパスワードが違います)", fields => validate(fields))
   )
 
   /**
@@ -46,7 +44,7 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
   def authenticate = Action.async { implicit rs =>
     signForm.bindFromRequest.fold(
       error => {
-        Future.successful(BadRequest(views.html.sign(error, "ユーザー名、またはパスワードが違います")))
+        Future.successful(BadRequest(views.html.sign(error, "入力形式が正しくありません")))
       },
       form => gotoLoginSucceeded(form.name)
     )

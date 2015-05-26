@@ -3,7 +3,7 @@ package controllers
 import jp.t2v.lab.play2.auth._
 import play.api.mvc._
 
-object Application extends Controller with LoginLogout with OptionalAuthElement with AuthConfigImpl {
+object Application extends Controller with OptionalAuthElement with AuthConfigImpl {
 
   def index = StackAction { implicit request =>
     Redirect(routes.Application.home())

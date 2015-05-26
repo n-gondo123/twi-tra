@@ -3,7 +3,7 @@
 @import helper._
 
 @main(title) {
-        @form(action=routes.TweetController.create, 'class -> "container", 'role -> "form"){
+        @form(action=routes.TweetController.create(), 'class -> "container", 'role -> "form"){
         <fieldset>
             <div class="form-group">
                 @textarea(tweetForm("content"), '_label -> "ツイートしてください", 'cols -> "80", 'rows -> "5")
