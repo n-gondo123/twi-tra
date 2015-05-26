@@ -24,7 +24,7 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
     mapping(
       "name" -> nonEmptyText(minLength = 3, maxLength = 20),
       "password" -> nonEmptyText(minLength = 3, maxLength = 20)
-    )(SignForm.apply)(SignForm.unapply) verifying("ユーザー名、またはパスワードが違います)", fields => validate(fields))
+    )(SignForm.apply)(SignForm.unapply)
   )
 
   /**
@@ -46,7 +46,13 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
       error => {
         Future.successful(BadRequest(views.html.sign(error, "入力形式が正しくありません")))
       },
-      form => gotoLoginSucceeded(form.name)
+      form => {
+        if (validate(form)) {
+          gotoLoginSucceeded(form.name)
+        } else {
+          Future.successful(Ok(views.html.sign(signForm.fill(form), "ユーザー名、またはパスワードが違います")))
+        }
+      }
     )
   }
 

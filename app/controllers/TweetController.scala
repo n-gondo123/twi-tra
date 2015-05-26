@@ -40,11 +40,11 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
         Tweet
           .filter(_.userId === user.id)
           .innerJoin(TwiUser).on { (t, u) =>
-          t.userId === u.id
-        }
+            t.userId === u.id
+          }
           .map { case (t, u) =>
-          (u.name, t)
-        }
+            (u.name, t)
+          }
           .sortBy(_._2.insTime.desc)
           .list
 
@@ -61,8 +61,8 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
       val tweets =
         Tweet
           .innerJoin(TwiUser).on { (t, u) =>
-          t.userId === u.id
-        }
+            t.userId === u.id
+          }
           .filter { case (t, u) =>
             (t.userId in
               Follow

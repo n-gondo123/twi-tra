@@ -36,14 +36,14 @@ object TwiUserController extends Controller with OptionalAuthElement with AuthCo
           TwiUser
             .filterNot(_.id === userIdInt)
             .leftJoin(Follow).on { (u, f1) =>
-            (u.id === f1.followUserId) && (f1.userId === userIdInt)
-          }
+              (u.id === f1.followUserId) && (f1.userId === userIdInt)
+            }
             .leftJoin(Follow).on { case ((u, f1), f2) =>
-            (u.id === f2.userId) && (f2.followUserId === userIdInt)
-          }
+              (u.id === f2.userId) && (f2.followUserId === userIdInt)
+            }
             .map { case ((u, f1), f2) =>
-            (u, f1.flag.?.getOrElse(false), f2.flag.?.getOrElse(false))
-          }
+              (u, f1.flag.?.getOrElse(false), f2.flag.?.getOrElse(false))
+            }
             .sortBy(_._1.id)
         Ok(views.html.user.list(users.list))
       }
