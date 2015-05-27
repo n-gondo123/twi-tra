@@ -15,27 +15,6 @@ $(function() {
         })
     };
 
-    /**
-     * タイムスタンプ変換用フィルター
-     */
-    Vue.filter('fmtDt', function(value) {
-        // TODO: 0サプレス
-        var dt = new Date(value);
-        return [
-            dt.getFullYear(),
-            '/',
-            dt.getMonth() + 1,
-            '/',
-            dt.getDate(),
-            ' ',
-            dt.getHours(),
-            ':',
-            dt.getMinutes(),
-            ':',
-            dt.getSeconds()
-        ].join('');
-    });
-
     var tweetVm = new Vue({
         el: '#tweet',
         data: {

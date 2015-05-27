@@ -16,20 +16,20 @@
             </fieldset>
         </form>
     </div>
-    <div class="col-xs-12">
+    <div class="col-xs-12" v-on="scroll: scroll">
       <table class="table table-hover">
         <thead>
           <tr>
-            <th>名前</th>
-            <th>内容</th>
-            <th class="col-xs-2">登録日時</th>
+            <th class="text-center">名前</th>
+            <th class="text-center">内容</th>
+            <th class="text-center col-xs-2">登録日時</th>
           </tr>
         </thead>
         <tbody>
             <tr v-repeat="tweets" v-cloak>
                 <td>{{member1}}</td>
                 <td>{{member2.content}}</td>
-                <td>{{member2.insTime | fmtDt}}</td>
+                <td class="text-center">{{member2.insTime | fmtDt}}</td>
             </tr>
         </tbody>
       </table>

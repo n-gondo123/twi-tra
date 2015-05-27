@@ -17,9 +17,9 @@
             <td>@user.name</td>
             <td>
                 @if(follow) {
-                    <a href="@routes.FollowController.remove(user.id)">フォロー解除</a>
+                    <a href="@routes.FollowController.unfollow(user.id)">フォロー解除</a>
                 } else {
-                    <a href="@routes.FollowController.create(user.id)">フォローする</a>
+                    <a href="@routes.FollowController.watch(user.id)">フォローする</a>
                 }
             </td>
             <td>

@@ -11,26 +11,35 @@ import play.api.Play.current
 object FollowController extends Controller with AuthElement with AuthConfigImpl {
 
   /**
-   * 登録実行
+   * フォロー
    */
-  def create(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  def watch(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     DB.withSession { implicit session =>
-      val follow = FollowRow(0, loggedIn.id, id, true, null, null)
+      val filterFollow =
+        Follow
+          .filter(f => f.userId === loggedIn.id && f.followUserId === id)
 
-      Follow.insert(follow)
+      filterFollow.firstOption.map {existFollow =>
+        filterFollow
+          .map(_.flag)
+          .update(true)
+      }.getOrElse {
+        val follow = FollowRow(0, loggedIn.id, id, true, null, null)
+        Follow.insert(follow)
+      }
     }
     Redirect(routes.TwiUserController.list())
   }
 
   /**
-   * 削除実行
+   * アンフォロー
    */
-  def remove(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  def unfollow(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     DB.withSession { implicit session =>
       Follow
-        .filter(_.userId === loggedIn.id)
-        .filter(_.followUserId === id)
-        .delete
+        .filter(f => f.userId === loggedIn.id && f.followUserId === id)
+        .map(_.flag)
+        .update(false)
     }
     Redirect(routes.TwiUserController.list())
   }

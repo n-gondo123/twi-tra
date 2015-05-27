@@ -48,10 +48,10 @@ POST        /tweet/create         controllers.TweetController.create
 GET        /tweet/remove/:id         controllers.TweetController.remove(id: Int)
 
 # Mapping to /tweet/create/:id
-GET        /follow/create/:id         controllers.FollowController.create(id: Int)
+GET        /follow/create/:id         controllers.FollowController.watch(id: Int)
 
 # Mapping to /tweet/remove/:id
-GET        /follow/remove/:id         controllers.FollowController.remove(id: Int)
+GET        /follow/remove/:id         controllers.FollowController.unfollow(id: Int)
 
 ## Mapping to /user/remove/<number>
 #POST        /user/remove/:id        controllers.UserController.remove(id: Long)
