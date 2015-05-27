@@ -9,3 +9,8 @@ dd.error {
 [v-cloak] {
     display: none;
 }
+
+#tweet-list {
+    height: 400px;
+    overflow-y: auto;
+}

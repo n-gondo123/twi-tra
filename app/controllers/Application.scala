@@ -14,8 +14,7 @@ object Application extends Controller with OptionalAuthElement with AuthConfigIm
    */
   def home = StackAction { implicit request =>
     loggedIn.map {user =>
-      val list = TweetController.all(user)
-      Ok(views.html.tweet.list(list))
+      Ok(views.html.tweet.list())
     }.getOrElse {
       Redirect(routes.SignController.index())
     }

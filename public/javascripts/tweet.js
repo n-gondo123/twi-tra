@@ -20,15 +20,31 @@ $(function() {
         data: {
             content : '',
             tweets: [],
+            allTweets: [],
+            dispLimit: 20,
             disabled: true
         },
         created: function() {
             var that = this;
             getTweets('all', function(response) {
-                that.tweets = response;
-            })
+                that.allTweets = response;
+                that.tweets = response.filter(function(val, idx) {
+                    return idx < that.dispLimit;
+                })
+            });
         },
         methods: {
+            scroll: function (e) {
+                // TODO: 縮小表示だとうまくいかない...
+                var that = this;
+                if ((e.target.scrollTop + e.target.offsetHeight) >= e.target.scrollHeight) {
+                    that.dispLimit += 20;
+                    this.tweets = this.allTweets.filter(function(val, idx) {
+                        return idx < that.dispLimit;
+                    })
+                }
+            },
+
             onTweet: function(e) {
                 var that = this;
                 var data = {
@@ -45,11 +61,15 @@ $(function() {
                     that.content = '';
                     $('#tweet-input').focus();
                     getTweets('all', function(response) {
-                        that.tweets = response;
+                        that.dispLimit = 20;
+                        that.allTweets = response;
+                        that.tweets = response.filter(function(val, idx) {
+                            return idx < that.dispLimit;
+                        })
                     })
                 }).fail(function () {
                     alert('failed.');
-                })
+                });
             },
             onCancel: function() {
                 if (this.content.length === 0) {

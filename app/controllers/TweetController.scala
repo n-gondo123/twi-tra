@@ -39,51 +39,9 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
    * 一覧表示(自分のみ)
    */
   def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-    DB.withSession { implicit session =>
-      val user = loggedIn
-      val tweets =
-        Tweet
-          .filter(_.userId === user.id)
-          .innerJoin(TwiUser).on { (t, u) =>
-            t.userId === u.id
-          }
-          .map { case (t, u) =>
-            (u.name, t)
-          }
-          .sortBy(_._2.insTime.desc)
-          .list
-
-      Ok(views.html.tweet.list(tweets))
-    }
+    Ok(views.html.tweet.list())
   }
-
-  /**
-   * 一覧表示(フォロワー含む)
-   */
-  def all(user: TwiUserRow) = {
-    DB.withSession { implicit session =>
-      val userIdInt = user.id
-      val tweets =
-        Tweet
-          .innerJoin(TwiUser).on { (t, u) =>
-            t.userId === u.id
-          }
-          .filter { case (t, u) =>
-            (t.userId in
-              Follow
-                .filter(_.userId === userIdInt)
-                .map(_.followUserId)
-              ) || (t.userId === userIdInt)
-          }
-          .map { case (t, u) =>
-            (u.name, t)
-          }
-          .sortBy(_._2.insTime.desc)
-          .list
-      tweets
-    }
-  }
-
+  
   /**
    * 登録実行
    */
@@ -108,8 +66,7 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
     val user = loggedIn
     DB.withSession { implicit session =>
       Tweet
-        .filter(_.userId === user.id)
-        .filter(t => t.id === id.bind)
+        .filter(t => t.userId === user.id && t.id === id.bind)
         .delete
 
       Redirect(routes.TweetController.list())

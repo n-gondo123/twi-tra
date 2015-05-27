@@ -1,5 +1,3 @@
-@(tweets: List[(String, models.Tables.TweetRow)])
-
 @main("ツイート一覧") {
 <div id="tweet">
     <div>
@@ -16,11 +14,11 @@
             </fieldset>
         </form>
     </div>
-    <div class="col-xs-12" v-on="scroll: scroll">
+    <div id="tweet-list" class="col-xs-12" v-on="scroll: scroll">
       <table class="table table-hover">
         <thead>
           <tr>
-            <th class="text-center">名前</th>
+            <th class="text-center col-xs-2">名前</th>
             <th class="text-center">内容</th>
             <th class="text-center col-xs-2">登録日時</th>
           </tr>
