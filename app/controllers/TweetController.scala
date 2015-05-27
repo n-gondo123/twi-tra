@@ -115,19 +115,4 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
       Redirect(routes.TweetController.list())
     }
   }
-
-  /**
-   * Tweet用JSON API
-   */
-  def jsonCreate = StackAction (parse.json, AuthorityKey -> NormalUser) { implicit request =>
-    request.body.validate[TweetForm].map { form =>
-      DB.withSession { implicit session =>
-        val tweet = TweetRow(0, loggedIn.id, form.content, null, null)
-        Tweet.insert(tweet)
-        Ok(Json.obj("result" -> "success"))
-      }
-    }.recoverTotal { e =>
-      BadRequest(Json.obj("result" -> "failure", "error" -> JsError.toFlatJson(e)))
-    }
-  }
 }
