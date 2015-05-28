@@ -1,3 +1,5 @@
+var TwiTra = {};
+
 /**
  * ゼロサプレス
  */
@@ -9,6 +11,8 @@ String.prototype.zeroSuppress = function(num) {
         return this.replace(/(\d)/, "0$1");
     }
 }
+
+Vue.use(window["vue-validator"]);
 
 /**
  * タイムスタンプ変換用フィルター
@@ -31,5 +35,5 @@ Vue.filter('fmtDt', function(value) {
 });
 
 $(function() {
-    $('input:first').focus().select();
+    TwiTra.vueRoot = new Vue();
 });

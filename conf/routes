@@ -36,10 +36,10 @@ POST        /user/update         controllers.TwiUserController.update
 GET         /tweet/list/:name           controllers.TweetController.list(name: String)
 
 # Mapping to /tweet/index
-GET         /tweet/edit           controllers.TweetController.edit
+#GET         /tweet/edit           controllers.TweetController.edit
 
 # Mapping to /tweet/create
-POST        /tweet/create         controllers.TweetController.create
+#POST        /tweet/create         controllers.TweetController.create
 
 # Mapping to /tweet/remove:/id
 #GET        /tweet/remove/:id         controllers.TweetController.remove(id: Int)

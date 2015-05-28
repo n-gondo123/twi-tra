@@ -11,6 +11,6 @@ dd.error {
 }
 
 #tweet-list {
-    height: 560px;
+    height: 600px;
     overflow-y: auto;
 }

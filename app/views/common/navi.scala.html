@@ -1,16 +1,19 @@
 @(userName: String)
 
-<div style="margin-bottom: 15px;">
+<div id="navi" style="margin-bottom: 15px;">
     <ul class="nav nav-tabs">
         @if(userName.nonEmpty) {
-            <li><a href="/home">タイムライン</a></li>
-            <li><a href="/user/list">ユーザー</a></li>
-            <li><a href="/tweet/list/@userName">ツイート</a></li>
-            <li><a href="/user/edit">アカウント編集</a></li>
-            <li><a href="/sign/signOut">サインアウト</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#myModal">
+              ツイートする
+            </a></li>
+            <li><a href="@routes.Application.home()">タイムライン</a></li>
+            <li><a href="@routes.TwiUserController.list()">ユーザー</a></li>
+            <li><a href="@routes.TweetController.list(userName)">ツイート</a></li>
+            <li><a href="@routes.TwiUserController.edit()">アカウント編集</a></li>
+            <li><a href="@routes.SignController.signOut()">サインアウト</a></li>
         } else {
-            <li><a href="/">トップ</a></li>
-            <li><a href="/user/edit">新規登録</a></li>
+            <li><a href="@routes.Application.index()">トップ</a></li>
+            <li><a href="@routes.TwiUserController.edit()">新規登録</a></li>
         }
     </ul>
 </div>

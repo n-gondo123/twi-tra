@@ -28,12 +28,12 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
   implicit val userFromReads = Json.reads[TweetForm]
   implicit val userRowWriter = Json.writes[TweetRow]
 
-  /**
-   * ツイートフォーム
-   */
-  def edit = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-    Ok(views.html.tweet.edit(tweetForm, "ツイートフォーム", loggedIn.name))
-  }
+//  /**
+//   * ツイートフォーム
+//   */
+//  def edit = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+//    Ok(views.html.tweet.edit(tweetForm, "ツイートフォーム", loggedIn.name))
+//  }
 
   /**
    * 一覧表示(自分のみ)
@@ -42,22 +42,22 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
     Ok(views.html.tweet.list(loggedIn.name))
   }
 
-  /**
-   * 登録実行
-   */
-  def create = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-    tweetForm.bindFromRequest.fold(
-      error => BadRequest(views.html.tweet.edit(error, "エラー", loggedIn.name)),
-      form => {
-        val user = loggedIn
-        DB.withSession { implicit session =>
-          val tweet = TweetRow(0, user.id, form.content, null, null)
-          Tweet.insert(tweet)
-        }
-        Redirect(routes.TweetController.edit())
-      }
-    )
-  }
+//  /**
+//   * 登録実行
+//   */
+//  def create = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+//    tweetForm.bindFromRequest.fold(
+//      error => BadRequest(views.html.tweet.edit(error, "エラー", loggedIn.name)),
+//      form => {
+//        val user = loggedIn
+//        DB.withSession { implicit session =>
+//          val tweet = TweetRow(0, user.id, form.content, null, null)
+//          Tweet.insert(tweet)
+//        }
+//        Redirect(routes.TweetController.edit())
+//      }
+//    )
+//  }
 
 //  /**
 //   * 削除実行

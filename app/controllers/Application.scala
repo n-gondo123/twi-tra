@@ -5,6 +5,8 @@ import play.api.mvc._
 
 object Application extends Controller with OptionalAuthElement with AuthConfigImpl {
 
+//  implicit def toAttributePair[B](pair: (String, B)): (Symbol, B) = Symbol(pair._1) -> pair._2
+//
   def index = StackAction { implicit request =>
     Redirect(routes.Application.home())
   }
