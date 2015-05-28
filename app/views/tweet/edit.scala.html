@@ -1,8 +1,8 @@
-@(tweetForm: Form[controllers.TweetController.TweetForm], title: String)
+@(tweetForm: Form[controllers.TweetController.TweetForm], title: String, userName: String)
 
 @import helper._
 
-@main(title) {
+@main(title, userName) {
     @form(action=routes.TweetController.create(), 'class -> "container", 'role -> "form"){
         <fieldset>
             <div class="form-group">

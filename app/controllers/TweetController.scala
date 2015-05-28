@@ -32,14 +32,14 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
    * ツイートフォーム
    */
   def edit = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-    Ok(views.html.tweet.edit(tweetForm, "ツイートフォーム"))
+    Ok(views.html.tweet.edit(tweetForm, "ツイートフォーム", loggedIn.name))
   }
 
   /**
    * 一覧表示(自分のみ)
    */
   def list(name: String) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-    Ok(views.html.tweet.list())
+    Ok(views.html.tweet.list(loggedIn.name))
   }
 
   /**
@@ -47,7 +47,7 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
    */
   def create = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     tweetForm.bindFromRequest.fold(
-      error => BadRequest(views.html.tweet.edit(error, "hoge")),
+      error => BadRequest(views.html.tweet.edit(error, "エラー", loggedIn.name)),
       form => {
         val user = loggedIn
         DB.withSession { implicit session =>

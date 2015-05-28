@@ -1,13 +1,13 @@
-@(signForm: Form[controllers.SignController.SignForm], message: String)
+@(signForm: Form[controllers.SignController.SignForm], message: String, userName: String)
 
 @import helper._
 
-@main("トップ", false) {
+@main("トップ", userName) {
     <div>
-        @if(!message.isEmpty) {
+        @if(message.nonEmpty) {
             <div class="alert alert-danger">@message</div>
         }
-        @form(action = routes.SignController.authenticate(), 'class -> "container", 'role -> "form"){
+        @form(action = routes.SignController.signIn(), 'class -> "container", 'role -> "form"){
             <fieldset>
                 <div class="form-group">
                     @inputText(signForm("name"), '_label -> "ユーザー名")

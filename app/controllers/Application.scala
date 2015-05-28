@@ -14,10 +14,9 @@ object Application extends Controller with OptionalAuthElement with AuthConfigIm
    */
   def home = StackAction { implicit request =>
     loggedIn.map {user =>
-      Ok(views.html.tweet.list())
+      Ok(views.html.tweet.list(user.name))
     }.getOrElse {
       Redirect(routes.SignController.index())
     }
   }
 }
-

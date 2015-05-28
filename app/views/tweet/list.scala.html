@@ -1,4 +1,6 @@
-@main("ツイート一覧") {
+@(userName: String)
+
+@main("ツイート一覧", userName) {
 <div id="tweet">
     <div class="col-xs-12">
         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" v-on="click: onShow">
@@ -37,7 +39,7 @@
             <th class="text-center col-xs-1">#</th>
             <th class="text-center col-xs-2">名前</th>
             <th class="text-center col-xs-7">内容</th>
-            <th class="text-center col-xs-2">登録日時</th>
+            <th class="text-center col-xs-2">ツイート日時</th>
           </tr>
         </thead>
         <tbody>

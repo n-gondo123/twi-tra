@@ -1,6 +1,6 @@
-@(users: List[(models.Tables.TwiUserRow, Boolean, Boolean)])
+@(users: List[(models.Tables.TwiUserRow, Boolean, Boolean)], userName: String)
 
-@main("ユーザ一覧") {
+@main("ユーザ一覧", userName) {
 <div class="col-xs-10">
 <table class="table table-hover table-striped table-bordered">
     <thead>

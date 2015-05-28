@@ -15,7 +15,7 @@ GET         /home                controllers.Application.home
 GET         /sign                    controllers.SignController.index
 
 # Mapping to /sign/signIn
-POST         /sign/signIn           controllers.SignController.authenticate
+POST         /sign/signIn           controllers.SignController.signIn
 
 # Mapping to /sign/signOut
 GET         /sign/signOut           controllers.SignController.signOut
@@ -51,8 +51,5 @@ GET        /follow/watch/:id         controllers.FollowController.watch(id: Int)
 GET        /follow/unfollow/:id         controllers.FollowController.unfollow(id: Int)
 
 # Json API
-#GET         /json/list              controllers.JsonController.list
-POST        /json/tweet/create            controllers.JsonTweetController.create
+POST       /json/tweet/create            controllers.JsonTweetController.create
 GET        /json/tweet/list/:kind            controllers.JsonTweetController.list(kind: String)
-#POST        /json/update            controllers.JsonController.update
-#POST        /json/remove/:id        controllers.JsonController.remove(id: Long)

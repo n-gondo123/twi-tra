@@ -1,4 +1,4 @@
-@(title: String, logIn: Boolean = true)(content: Html)
+@(title: String, userName: String)(content: Html)
 
 <!DOCTYPE html>
 
@@ -15,8 +15,10 @@
     </head>
     <body>
         <div class="container">
-            @common.navi(logIn)
-            @content
+            @common.navi(userName)
+            <div class="rows">
+                @content
+            </div>
         </div>
     </body>
 </html>
