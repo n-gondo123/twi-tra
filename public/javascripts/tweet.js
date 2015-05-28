@@ -45,6 +45,11 @@ $(function() {
                 }
             },
 
+            onShow: function(e) {
+                setTimeout(function() {
+                    $('#tweet-input').focus();
+                }, 0);
+            },
             onTweet: function(e) {
                 var that = this;
                 var data = {
@@ -59,7 +64,6 @@ $(function() {
                     data: JSON.stringify(data)
                 }).done(function (response){
                     that.content = '';
-                    $('#tweet-input').focus();
                     getTweets('all', function(response) {
                         that.dispLimit = 20;
                         that.allTweets = response;
@@ -71,7 +75,7 @@ $(function() {
                     alert('failed.');
                 });
             },
-            onCancel: function() {
+            onClear: function(e) {
                 if (this.content.length === 0) {
                     return;
                 }
@@ -80,6 +84,9 @@ $(function() {
                     this.content = '';
                     $('#tweet-input').focus();
                 }
+            },
+            onCancel: function(e) {
+                this.content = '';
             }
         }
     });

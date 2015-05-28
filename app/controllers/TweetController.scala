@@ -41,7 +41,7 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
   def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     Ok(views.html.tweet.list())
   }
-  
+
   /**
    * 登録実行
    */

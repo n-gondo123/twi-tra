@@ -1,33 +1,49 @@
 @main("ツイート一覧") {
 <div id="tweet">
-    <div>
-        <form action="@routes.TweetController.create()" class="container" role="form">
-            <fieldset>
-                <div>入力文字数：<span v-cloak>{{140 - content.length}}</span></div>
-                <div class="form-group">
-                    <textarea id="tweet-input" cols="60" rows="4" maxlength="140" v-model="content"></textarea>
-                </div>
-                <div>
-                    <input type="button" value="ツイート" class="btn btn-success" v-attr="disabled: disabled" v-on="click: onTweet">
-                    <input type="button" value="クリア" class="btn btn-warning" v-on="click: onCancel">
-                </div>
-            </fieldset>
-        </form>
+    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" v-on="click: onShow">
+      ツイートする
+    </button>
+    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+          </div>
+          <div class="modal-body">
+            <form action="@routes.TweetController.create()" class="" role="form">
+                <fieldset>
+                    <div>入力文字数：<span v-cloak>{{140 - content.length}}</span></div>
+                    <div class="form-group">
+                        <textarea id="tweet-input" class="form-control" rows="4" maxlength="140" v-model="content"></textarea>
+                    </div>
+                </fieldset>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-dismiss="modal" v-attr="disabled: disabled" v-on="click: onTweet">ツイート</button>
+            <button type="button" class="btn btn-danger" v-on="click: onClear">クリア</button>
+            <button type="button" class="btn btn-warning" data-dismiss="modal" v-on="click: onCancel">キャンセル</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="tweet-list" class="col-xs-12" v-on="scroll: scroll">
-      <table class="table table-hover">
+      <table class="table table-hover table-striped table-bordered">
         <thead>
           <tr>
+            <th class="text-center col-xs-1">#</th>
             <th class="text-center col-xs-2">名前</th>
-            <th class="text-center">内容</th>
+            <th class="text-center col-xs-7">内容</th>
             <th class="text-center col-xs-2">登録日時</th>
           </tr>
         </thead>
         <tbody>
-            <tr v-repeat="tweets" v-cloak>
-                <td>{{member1}}</td>
-                <td>{{member2.content}}</td>
-                <td class="text-center">{{member2.insTime | fmtDt}}</td>
+            <tr v-repeat="tweet: tweets" v-cloak>
+                <td class="text-center">{{$index + 1}}</td>
+                <td>{{tweet.member1}}</td>
+                <td>{{tweet.member2.content}}</td>
+                <td class="text-center">{{tweet.member2.insTime | fmtDt}}</td>
             </tr>
         </tbody>
       </table>
