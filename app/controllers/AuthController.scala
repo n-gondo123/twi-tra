@@ -82,7 +82,8 @@ trait AuthConfigImpl extends AuthConfig {
    * 認証が失敗した場合に遷移する先を指定します。
    */
   def authenticationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] =
-    Future.successful(Unauthorized("許可されていません"))
+//    Future.successful(Unauthorized("許可されていません"))
+    Future.successful(Redirect(routes.SignController.index()))
 
   /**
    * 認可(権限チェック)が失敗した場合に遷移する先を指定します。

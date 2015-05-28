@@ -2,7 +2,7 @@
 
 @main("ユーザ一覧") {
 <div class="col-xs-10">
-<table class="table table-hover">
+<table class="table table-hover table-striped table-bordered">
     <thead>
         <tr>
             <th>名前</th>
@@ -14,7 +14,7 @@
     @* ユーザの一覧をループで出力 *@
     @users.map { case (user, follow, followed) =>
         <tr>
-            <td>@user.name</td>
+            <td><a href="@routes.TweetController.list(user.name)">@user.name</td>
             <td>
                 @if(follow) {
                     <a href="@routes.FollowController.unfollow(user.id)">フォロー解除</a>

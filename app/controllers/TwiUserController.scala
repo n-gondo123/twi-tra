@@ -48,7 +48,7 @@ object TwiUserController extends Controller with OptionalAuthElement with AuthCo
         Ok(views.html.user.list(users.list))
       }
     }.getOrElse {
-      Unauthorized("許可されていません")
+      Redirect(routes.SignController.index())
     }
   }
 

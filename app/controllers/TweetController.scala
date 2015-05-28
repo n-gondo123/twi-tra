@@ -38,7 +38,7 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
   /**
    * 一覧表示(自分のみ)
    */
-  def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  def list(name: String) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     Ok(views.html.tweet.list())
   }
 
@@ -59,17 +59,17 @@ object TweetController extends Controller with AuthElement with AuthConfigImpl {
     )
   }
 
-  /**
-   * 削除実行
-   */
-  def remove(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-    val user = loggedIn
-    DB.withSession { implicit session =>
-      Tweet
-        .filter(t => t.userId === user.id && t.id === id.bind)
-        .delete
-
-      Redirect(routes.TweetController.list())
-    }
-  }
+//  /**
+//   * 削除実行
+//   */
+//  def remove(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+//    val user = loggedIn
+//    DB.withSession { implicit session =>
+//      Tweet
+//        .filter(t => t.userId === user.id && t.id === id.bind)
+//        .delete
+//
+//      Redirect(routes.TweetController.list())
+//    }
+//  }
 }

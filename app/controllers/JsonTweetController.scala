@@ -1,12 +1,9 @@
 package controllers
 
-import java.sql.Timestamp;
-
 import controllers.Role.NormalUser
 import jp.t2v.lab.play2.auth.AuthElement
 import models.Tables._
 import models.Tables.profile.simple._
-import org.joda.time.DateTime
 import play.api.data.Forms._
 import play.api.data._
 import play.api.db.slick._
@@ -40,31 +37,33 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
    * 一覧表示(自分のみ)
    */
   def list(kind: String) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-    DB.withSession { implicit session =>
-      val tweets = if (kind == "all") {
-        all(loggedIn.id)
-      } else {
-        myself(loggedIn.id)
-      }
-      Ok(Json.toJson(tweets))
+    val tweets = if (kind == "all") {
+      all(loggedIn.id)
+    } else {
+      self(kind)
     }
+    Ok(Json.toJson(tweets))
   }
 
   /**
-   * 一覧表示(自分のみ)
+   * 一覧表示(対象者のみ)
    */
-  def myself(id: Int) = {
+  def self(name: String) = {
     DB.withSession { implicit session =>
-      Tweet
-        .filter(_.userId === id)
-        .innerJoin(TwiUser).on { (t, u) =>
-          t.userId === u.id
-        }
-        .map { case (t, u) =>
-          (u.name, t)
-        }
-        .sortBy(_._2.insTime.desc)
-        .list
+      TwiUser.filter(_.name === name).firstOption.map { user =>
+        Tweet
+          .filter(_.userId === user.id)
+          .innerJoin(TwiUser).on { (t, u) =>
+            t.userId === u.id
+          }
+          .map { case (t, u) =>
+            (u.name, t)
+          }
+          .sortBy(_._2.insTime.desc)
+          .list
+      }.getOrElse {
+        List()
+      }
     }
   }
 

@@ -8,12 +8,14 @@ $(function() {
             type: 'GET',
             contentType: 'application/json; charset=UTF-8',
             dataType: 'json',
-        }).done(function (response){
+        }).done(function (response) {
             callback(response);
-        }).fail(function () {
+        }).fail(function (response, status) {
             alert('failed.');
-        })
+        });
     };
+
+    var kind = location.pathname === '/home' ? 'all' : location.pathname.substr('/tweet/list/'.length);
 
     var tweetVm = new Vue({
         el: '#tweet',
@@ -26,7 +28,7 @@ $(function() {
         },
         created: function() {
             var that = this;
-            getTweets('all', function(response) {
+            getTweets(kind, function(response) {
                 that.allTweets = response;
                 that.tweets = response.filter(function(val, idx) {
                     return idx < that.dispLimit;
@@ -35,7 +37,7 @@ $(function() {
         },
         methods: {
             scroll: function (e) {
-                // TODO: 縮小表示だとうまくいかない...
+                // TODO: 縮小表示だとうまくいかない時がある...
                 var that = this;
                 if ((e.target.scrollTop + e.target.offsetHeight) >= e.target.scrollHeight) {
                     that.dispLimit += 20;
@@ -64,7 +66,7 @@ $(function() {
                     data: JSON.stringify(data)
                 }).done(function (response){
                     that.content = '';
-                    getTweets('all', function(response) {
+                    getTweets(kind, function(response) {
                         that.dispLimit = 20;
                         that.allTweets = response;
                         that.tweets = response.filter(function(val, idx) {
