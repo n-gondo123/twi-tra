@@ -36,4 +36,11 @@ Vue.filter('fmtDt', function(value) {
 
 $(function() {
     TwiTra.vueRoot = new Vue();
+
+    TwiTra.vueRoot.$addChild({
+        el: '#navi',
+        data : {
+            pathname: location.pathname
+        }
+    });
 });

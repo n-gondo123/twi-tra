@@ -22,9 +22,9 @@
             </div>
             <div class="form-group">
                 @inputPassword(userForm("password"), '_label -> "パスワード", Symbol("v-model") -> "password", Symbol("v-validate") -> "required, minLength: 3, maxLength:20")
-                <p class="error" v-if="validation.password.required && validation.password.dirty">必須項目</p>
-                <p class="error" v-if="validation.password.minLength && validation.password.dirty">3文字以上</p>
-                <p class="error" v-if="validation.password.maxLength && validation.password.dirty">20文字以内</p>
+                <p v-if="validation.password.required && validation.password.dirty">必須項目</p>
+                <p v-if="validation.password.minLength && validation.password.dirty">3文字以上</p>
+                <p v-if="validation.password.maxLength && validation.password.dirty">20文字以内</p>
             </div>
             @userForm("id").value.map { value =>
                 <input type="hidden" name="id" value="@value" />
