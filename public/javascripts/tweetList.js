@@ -23,7 +23,7 @@ $(function() {
         data: {
             tweets: [],
             allTweets: [],
-            dispLimit: 20,
+            dispLimit: 50,
         },
         created: function() {
             var that = this;
@@ -33,6 +33,7 @@ $(function() {
                     that.tweets = response.filter(function(val, idx) {
                         return idx < that.dispLimit;
                     })
+                    $('.tree').treegrid();
                 });
             });
         },
@@ -40,6 +41,10 @@ $(function() {
             this.$emit('reloadTweets');
         },
         methods: {
+            onReply: function(rootId) {
+                TwiTra.vueRoot.$broadcast('showTweetForm', rootId);
+            },
+
             scroll: function (e) {
                 // TODO: 縮小表示だとうまくいかない時がある...
                 var that = this;

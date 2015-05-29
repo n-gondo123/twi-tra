@@ -41,6 +41,11 @@ $(function() {
         el: '#navi',
         data : {
             pathname: location.pathname
+        },
+        methods: {
+            onNewTweet: function(rootId) {
+                TwiTra.vueRoot.$broadcast('showTweetFrom', rootId);
+            }
         }
     });
 });

@@ -6,6 +6,7 @@ $(function() {
         el: '#tweet-form',
         data: {
             content : '',
+            rootId: 0,
             disabled: true
         },
         created: function() {
@@ -15,14 +16,19 @@ $(function() {
             this.$watch('content', function(value) {
                 this.disabled = (value.replace(/[ 　\r\n]/g, '').length === 0)
             });
+
+            this.$on('showTweetForm', function(rootId) {
+                this.rootId = rootId;
+            })
         },
         methods: {
             onTweet: function(e) {
                 var that = this;
                 var data = {
-                    content: this.content
+                    content: this.content,
+                    rootId: this.rootId
                 };
-
+                
                 $.ajax({
                     url: '/json/tweet/create',
                     type: 'POST',
@@ -50,9 +56,10 @@ $(function() {
             }
         }
     });
-        
+     
     $('#myModal')
         .on('show.bs.modal', function(e) {
+            console.log(e);
             setTimeout(function() {
                 $('#tweet-input').focus();
             }, 0);
