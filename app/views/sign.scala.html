@@ -1,24 +1,25 @@
-@(signForm: Form[controllers.SignController.SignForm], message: String)
+@(signForm: Form[controllers.SignController.SignForm], message: String, userName: String)
 
 @import helper._
 
-@main("トップ", false) {
-    <div>
-        @if(!message.isEmpty) {
+@main("トップ", userName) {
+    <div id="sign-form">
+        @if(message.nonEmpty) {
             <div class="alert alert-danger">@message</div>
         }
-        @form(action = routes.SignController.authenticate(), 'class -> "container", 'role -> "form"){
-            <fieldset>
+        @form(action = routes.SignController.signIn(), 'class -> "container", 'role -> "form"){
+            <fieldset v-cloak>
                 <div class="form-group">
-                    @inputText(signForm("name"), '_label -> "ユーザー名")
+                    @inputText(signForm("name"), '_label -> "ユーザー名", Symbol("v-model") -> "name", Symbol("v-validate") -> "required")
                 </div>
                 <div class="form-group">
-                    @inputPassword(signForm("password"), '_label -> "パスワード")
+                    @inputPassword(signForm("password"), '_label -> "パスワード", Symbol("v-model") -> "password", Symbol("v-validate") -> "required")
                 </div>
                 <div>
-                    <input type="submit" value="サインイン" class="btn btn-success">
+                    <button class="btn btn-success" v-attr="disabled: !valid">サインイン</button>
                 </div>
             </fieldset>
         }
     </div>
 }
+<script src="@routes.Assets.at("javascripts/signForm.js")" type="text/javascript"></script>

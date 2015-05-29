@@ -1,19 +1,20 @@
-@(logIn: Boolean)
+@(userName: String)
 
-<div>
+<div id="navi" style="margin-bottom: 15px;">
     <ul class="nav nav-tabs">
-        @{
-            if (logIn) {
-                <li><a href="/home">タイムライン</a></li>
-                <li><a href="/tweet/edit">ツイートする</a></li>
-                <li><a href="/tweet/list">ツイート一覧</a></li>
-                <li><a href="/user/list">ユーザー一覧</a></li>
-                <li><a href="/user/edit">アカウント編集</a></li>
-                <li><a href="/sign/signOut">サインアウト</a></li>
-            } else {
-                <li><a href="/">トップ</a></li>
-                <li><a href="/user/edit">新規登録</a></li>
-            }
+        @if(userName.nonEmpty) {
+            <li><a href="#" data-toggle="modal" data-target="#myModal">
+              ツイートする
+            </a></li>
+            <li v-class="active: pathname === '@routes.Application.home()'"><a href="@routes.Application.home()">タイムライン</a></li>
+            <li v-class="active: pathname === '@routes.TwiUserController.list()'"><a href="@routes.TwiUserController.list()">ユーザー</a></li>
+            <li v-class="active: pathname === '@routes.TweetController.list(userName)'"><a href="@routes.TweetController.list(userName)">ツイート</a></li>
+            <li v-class="active: pathname === '@routes.TwiUserController.edit()'"><a href="@routes.TwiUserController.edit()">アカウント編集</a></li>
+            <li v-class="active: pathname === '@routes.SignController.signOut()'"><a href="@routes.SignController.signOut()">サインアウト</a></li>
+        } else {
+            <li><a href="@routes.Application.index()">トップ</a></li>
+            <li v-class="active: pathname === '@routes.TwiUserController.edit()'"><a href="@routes.TwiUserController.edit()">新規登録</a></li>
+            @*<li v-class="active: true"><a href="@routes.TwiUserController.edit()">新規登録</a></li>*@
         }
     </ul>
 </div>

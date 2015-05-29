@@ -45,10 +45,10 @@ object TwiUserController extends Controller with OptionalAuthElement with AuthCo
               (u, f1.flag.?.getOrElse(false), f2.flag.?.getOrElse(false))
             }
             .sortBy(_._1.id)
-        Ok(views.html.user.list(users.list))
+        Ok(views.html.user.list(users.list, loggedIn.get.name))
       }
     }.getOrElse {
-      Unauthorized("許可されていません")
+      Redirect(routes.SignController.index())
     }
   }
 
@@ -71,7 +71,7 @@ object TwiUserController extends Controller with OptionalAuthElement with AuthCo
       "アカウント登録"
     }
 
-    Ok(views.html.user.edit(form, title, "", loggedIn))
+    Ok(views.html.user.edit(form, title, "", loggedIn.map(_.name).getOrElse("")))
   }
 
   /**
@@ -79,16 +79,16 @@ object TwiUserController extends Controller with OptionalAuthElement with AuthCo
    */
   def create = StackAction { implicit request =>
     userForm.bindFromRequest.fold(
-      error => BadRequest(views.html.user.edit(error, "アカウント登録", "入力内容に誤りがあります", loggedIn)),
+      error => BadRequest(views.html.user.edit(error, "アカウント登録", "入力内容に誤りがあります", "")),
       form => {
         DB.withSession { implicit session =>
           val reqForm = userForm.fill(UserForm(form.name, form.email, form.password))
           val list = TwiUser.filter(t => (t.name === form.name) || (t.email === form.email)).list
           if (list.nonEmpty) {
             if (list.count(_.name == form.name) > 0) {
-              Ok(views.html.user.edit(reqForm, "アカウント登録", "その名前はすでに登録されています", loggedIn))
+              Ok(views.html.user.edit(reqForm, "アカウント登録", "その名前はすでに登録されています", ""))
             } else {
-              Ok(views.html.user.edit(reqForm, "アカウント登録", "そのメールアドレスはすでに登録されています", loggedIn))
+              Ok(views.html.user.edit(reqForm, "アカウント登録", "そのメールアドレスはすでに登録されています", ""))
             }
           } else {
             val password = encryptAES(form.password)
@@ -106,7 +106,7 @@ object TwiUserController extends Controller with OptionalAuthElement with AuthCo
    */
   def update = StackAction { implicit request =>
     userForm.bindFromRequest.fold(
-      error => BadRequest(views.html.user.edit(error, "アカウント編集", "入力内容に誤りがあります", loggedIn)),
+      error => BadRequest(views.html.user.edit(error, "アカウント編集", "入力内容に誤りがあります", loggedIn.get.name)),
       form => {
         loggedIn.map { user =>
           DB.withSession { implicit session =>
@@ -120,9 +120,9 @@ object TwiUserController extends Controller with OptionalAuthElement with AuthCo
                 .list
             if (list.nonEmpty) {
               if (list.count(_.name == form.name) > 0) {
-                Ok(views.html.user.edit(reqForm, "アカウント登録", "その名前はすでに登録されています", loggedIn))
+                Ok(views.html.user.edit(reqForm, "アカウント登録", "その名前はすでに登録されています", loggedIn.get.name))
               } else {
-                Ok(views.html.user.edit(reqForm, "アカウント登録", "そのメールアドレスはすでに登録されています", loggedIn))
+                Ok(views.html.user.edit(reqForm, "アカウント登録", "そのメールアドレスはすでに登録されています", loggedIn.get.name))
               }
             } else {
               val password = encryptAES(form.password)

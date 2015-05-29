@@ -1,28 +1,39 @@
-@(userForm: Form[controllers.TwiUserController.UserForm], title: String, message: String, user: Option[models.Tables.TwiUserRow])
+@(userForm: Form[controllers.TwiUserController.UserForm], title: String, message: String, userName: String)
 
 @import helper._
 
-@main(title, user.isDefined) {
-    @if(!message.isEmpty) {
+@main(title, userName) {
+    <div id="user-form">
+    @if(message.nonEmpty) {
         <div class="alert alert-danger">@message</div>
     }
-    @form(user.map(x => routes.TwiUserController.update()).getOrElse(routes.TwiUserController.create()), 'novalidate -> "", 'class -> "container", 'role -> "form"){
-        <fieldset>
+    @form( if(userName.nonEmpty){ routes.TwiUserController.update() } else{routes.TwiUserController.create()}, 'novalidate -> "", 'class -> "container", 'role -> "form"){
+        <fieldset v-cloak>
             <div class="form-group">
-                @inputText(userForm("name"), '_label -> "ユーザー名")
+                @inputText(userForm("name"), '_label -> "ユーザー名", Symbol("v-model") -> "name", Symbol("v-validate") -> "required, minLength: 3, maxLength: 20")
+                <p v-if="validation.name.required && validation.name.dirty">必須項目</p>
+                <p v-if="validation.name.minLength && validation.name.dirty">3文字以上</p>
+                <p v-if="validation.name.maxLength && validation.name.dirty">20文字以内</p>
             </div>
             <div class="form-group">
-                @inputText(userForm("email"), 'type -> "email", '_label -> "E-Mail")
+                @inputText(userForm("email"), 'type -> "email", '_label -> "E-Mail", Symbol("v-model") -> "email", Symbol("v-validate") -> "required, maxLength:100")
+                <p v-if="validation.email.required && validation.email.dirty">必須項目</p>
+                <p v-if="validation.email.maxLength && validation.email.dirty">100文字以内</p>
             </div>
             <div class="form-group">
-                @inputPassword(userForm("password"), '_label -> "パスワード")
+                @inputPassword(userForm("password"), '_label -> "パスワード", Symbol("v-model") -> "password", Symbol("v-validate") -> "required, minLength: 3, maxLength:20")
+                <p v-if="validation.password.required && validation.password.dirty">必須項目</p>
+                <p v-if="validation.password.minLength && validation.password.dirty">3文字以上</p>
+                <p v-if="validation.password.maxLength && validation.password.dirty">20文字以内</p>
             </div>
             @userForm("id").value.map { value =>
                 <input type="hidden" name="id" value="@value" />
             }
             <div>
-                <input type="submit" value="登録" class="btn btn-success">
+                <input type="submit" value="登録" class="btn btn-success" v-attr="disabled: !valid">
             </div>
         </fieldset>
     }
+    </div>
 }
+<script src="@routes.Assets.at("javascripts/userForm.js")" type="text/javascript"></script>

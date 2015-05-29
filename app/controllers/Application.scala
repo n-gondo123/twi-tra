@@ -5,6 +5,8 @@ import play.api.mvc._
 
 object Application extends Controller with OptionalAuthElement with AuthConfigImpl {
 
+//  implicit def toAttributePair[B](pair: (String, B)): (Symbol, B) = Symbol(pair._1) -> pair._2
+//
   def index = StackAction { implicit request =>
     Redirect(routes.Application.home())
   }
@@ -14,11 +16,9 @@ object Application extends Controller with OptionalAuthElement with AuthConfigIm
    */
   def home = StackAction { implicit request =>
     loggedIn.map {user =>
-      val list = TweetController.all(user)
-      Ok(views.html.tweet.list(list))
+      Ok(views.html.tweet.list(user.name))
     }.getOrElse {
       Redirect(routes.SignController.index())
     }
   }
 }
-

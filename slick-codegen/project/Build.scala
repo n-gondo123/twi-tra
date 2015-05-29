@@ -20,6 +20,10 @@ object myBuild extends Build {
         "jp.t2v" %% "play2-auth"      % "0.13.2",
         "jp.t2v" %% "play2-auth-test" % "0.13.2" % "test"
       ),
+      resolvers ++= Seq(
+        "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+        "Typesafe Maven Repository" at "http://repo.typesafe.com/typesafe/maven-releases/"
+      ),
       slick <<= slickCodeGenTask, // register manual sbt command
       sourceGenerators in Compile <+= slickCodeGenTask // register automatic code generation on every compile, remove for only manual use
     )

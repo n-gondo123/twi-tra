@@ -15,7 +15,7 @@ GET         /home                controllers.Application.home
 GET         /sign                    controllers.SignController.index
 
 # Mapping to /sign/signIn
-POST         /sign/signIn           controllers.SignController.authenticate
+POST         /sign/signIn           controllers.SignController.signIn
 
 # Mapping to /sign/signOut
 GET         /sign/signOut           controllers.SignController.signOut
@@ -32,31 +32,24 @@ POST        /user/create         controllers.TwiUserController.create
 # Mapping to /user/update
 POST        /user/update         controllers.TwiUserController.update
 
-# Mapping to /tweet/all
-#GET         /tweet/all           controllers.TweetController.all
-
 # Mapping to /tweet/list
-GET         /tweet/list           controllers.TweetController.list
+GET         /tweet/list/:name           controllers.TweetController.list(name: String)
 
 # Mapping to /tweet/index
-GET         /tweet/edit           controllers.TweetController.edit
+#GET         /tweet/edit           controllers.TweetController.edit
 
 # Mapping to /tweet/create
-POST        /tweet/create         controllers.TweetController.create
+#POST        /tweet/create         controllers.TweetController.create
 
 # Mapping to /tweet/remove:/id
-GET        /tweet/remove/:id         controllers.TweetController.remove(id: Int)
+#GET        /tweet/remove/:id         controllers.TweetController.remove(id: Int)
 
-# Mapping to /tweet/create/:id
-GET        /follow/create/:id         controllers.FollowController.create(id: Int)
+# Mapping to /tweet/watch/:id
+GET        /follow/watch/:id         controllers.FollowController.watch(id: Int)
 
-# Mapping to /tweet/remove/:id
-GET        /follow/remove/:id         controllers.FollowController.remove(id: Int)
+# Mapping to /tweet/unfollow/:id
+GET        /follow/unfollow/:id         controllers.FollowController.unfollow(id: Int)
 
-## Mapping to /user/remove/<number>
-#POST        /user/remove/:id        controllers.UserController.remove(id: Long)
-#
-#GET         /json/list              controllers.JsonController.list
-#POST        /json/create            controllers.JsonController.create
-#POST        /json/update            controllers.JsonController.update
-#POST        /json/remove/:id        controllers.JsonController.remove(id: Long)
+# Json API
+POST       /json/tweet/create            controllers.JsonTweetController.create
+GET        /json/tweet/list/:kind            controllers.JsonTweetController.list(kind: String)

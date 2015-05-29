@@ -34,23 +34,23 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
     loggedIn.map { logIn =>
       Redirect(routes.Application.index())
     }.getOrElse {
-      Ok(views.html.sign(signForm, ""))
+      Ok(views.html.sign(signForm, "", ""))
     }
   }
 
   /**
-   * 認証
+   * 認証（サインイン）
    */
-  def authenticate = Action.async { implicit rs =>
+  def signIn = Action.async { implicit rs =>
     signForm.bindFromRequest.fold(
       error => {
-        Future.successful(BadRequest(views.html.sign(error, "入力形式が正しくありません")))
+        Future.successful(BadRequest(views.html.sign(error, "入力形式が正しくありません", "")))
       },
       form => {
         if (validate(form)) {
           gotoLoginSucceeded(form.name)
         } else {
-          Future.successful(Ok(views.html.sign(signForm.fill(form), "ユーザー名、またはパスワードが違います")))
+          Future.successful(Ok(views.html.sign(signForm.fill(form), "ユーザー名、またはパスワードが違います", "")))
         }
       }
     )
@@ -66,13 +66,6 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
         .firstOption
         .exists(_.password == encryptAES(signForm.password))
     }
-  }
-
-  /**
-   * サインイン
-   */
-  def signIn = Action { implicit rs =>
-    Ok(views.html.sign(signForm, "hoge"))
   }
 
   /**

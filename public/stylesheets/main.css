@@ -5,3 +5,12 @@ dd.info {
 dd.error {
     color: red;
 }
+
+[v-cloak] {
+    display: none;
+}
+
+#tweet-list {
+    height: 600px;
+    overflow-y: auto;
+}

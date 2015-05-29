@@ -1,8 +1,8 @@
-@(users: List[(models.Tables.TwiUserRow, Boolean, Boolean)])
+@(users: List[(models.Tables.TwiUserRow, Boolean, Boolean)], userName: String)
 
-@main("ユーザ一覧") {
+@main("ユーザ一覧", userName) {
 <div class="col-xs-10">
-<table class="table table-hover">
+<table class="table table-hover table-striped table-bordered">
     <thead>
         <tr>
             <th>名前</th>
@@ -14,12 +14,12 @@
     @* ユーザの一覧をループで出力 *@
     @users.map { case (user, follow, followed) =>
         <tr>
-            <td>@user.name</td>
+            <td><a href="@routes.TweetController.list(user.name)">@user.name</td>
             <td>
                 @if(follow) {
-                    <a href="@routes.FollowController.remove(user.id)">フォロー解除</a>
+                    <a href="@routes.FollowController.unfollow(user.id)">フォロー解除</a>
                 } else {
-                    <a href="@routes.FollowController.create(user.id)">フォローする</a>
+                    <a href="@routes.FollowController.watch(user.id)">フォローする</a>
                 }
             </td>
             <td>
