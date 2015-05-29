@@ -28,7 +28,7 @@ $(function() {
                     content: this.content,
                     rootId: this.rootId
                 };
-                
+
                 $.ajax({
                     url: '/json/tweet/create',
                     type: 'POST',
@@ -59,7 +59,6 @@ $(function() {
      
     $('#myModal')
         .on('show.bs.modal', function(e) {
-            console.log(e);
             setTimeout(function() {
                 $('#tweet-input').focus();
             }, 0);

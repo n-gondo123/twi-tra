@@ -47,6 +47,26 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
   }
 
   /**
+   * 一覧表示(関連)
+   */
+  def relation(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    val tweets = DB.withSession { implicit session =>
+      Tweet
+        .filter(t => t.id === id || t.rootId === id)
+        .innerJoin(TwiUser).on { (t, u) =>
+          t.userId === u.id
+        }
+        .map { case (t, u) =>
+          (u.name, t)
+        }
+        .sortBy(_._2.insTime.asc)
+        .list
+      }
+
+    Ok(Json.toJson(tweets))
+  }
+
+  /**
    * 一覧表示(対象者のみ)
    */
   def self(name: String) = {
@@ -60,7 +80,7 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
           .map { case (t, u) =>
             (u.name, t)
           }
-          .sortBy(_._2.insTime.asc)
+          .sortBy(_._2.insTime.desc)
           .list
       }.getOrElse {
         List()
@@ -87,7 +107,7 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
         .map { case (t, u) =>
           (u.name, t)
         }
-        .sortBy(_._2.insTime.asc)
+        .sortBy(_._2.insTime.desc)
         .list
     }
   }

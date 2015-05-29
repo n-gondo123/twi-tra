@@ -34,6 +34,13 @@ Vue.filter('fmtDt', function(value) {
     ].join('');
 });
 
+Vue.filter('limit', function(array) {
+    var that = this;
+    return array.filter(function(val, idx) {
+        return idx < Number(that.limit) || 0;
+    });
+});
+
 $(function() {
     TwiTra.vueRoot = new Vue();
 

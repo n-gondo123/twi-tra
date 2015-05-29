@@ -35,6 +35,9 @@ POST        /user/update         controllers.TwiUserController.update
 # Mapping to /tweet/list
 GET         /tweet/list/:name           controllers.TweetController.list(name: String)
 
+# Mapping to /tweet/list
+GET         /tweet/relation/:id           controllers.TweetController.list(id: String)
+
 # Mapping to /tweet/index
 #GET         /tweet/edit           controllers.TweetController.edit
 
@@ -53,3 +56,4 @@ GET        /follow/unfollow/:id         controllers.FollowController.unfollow(id
 # Json API
 POST       /json/tweet/create            controllers.JsonTweetController.create
 GET        /json/tweet/list/:kind            controllers.JsonTweetController.list(kind: String)
+GET        /json/tweet/relation/:id            controllers.JsonTweetController.relation(id: Int)
