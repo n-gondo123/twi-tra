@@ -16,13 +16,14 @@ import play.api.libs.json._
 object JsonTweetController extends Controller with AuthElement with AuthConfigImpl {
 
   // フォームの値を格納する
-  case class TweetForm(content: String)
+  case class TweetForm(content: String, rootId: Int)
 
 
   // formのデータとケースクラスの変換を行う
   val tweetForm = Form(
     mapping(
-      "content" -> nonEmptyText(maxLength = 140)
+      "content" -> nonEmptyText(maxLength = 140),
+      "rootId" -> number
     )(TweetForm.apply)(TweetForm.unapply)
   )
 
@@ -42,6 +43,26 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
     } else {
       self(kind)
     }
+    Ok(Json.toJson(tweets))
+  }
+
+  /**
+   * 一覧表示(関連)
+   */
+  def relation(id: Int) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    val tweets = DB.withSession { implicit session =>
+      Tweet
+        .filter(t => t.id === id || t.rootId === id)
+        .innerJoin(TwiUser).on { (t, u) =>
+          t.userId === u.id
+        }
+        .map { case (t, u) =>
+          (u.name, t)
+        }
+        .sortBy(_._2.insTime.asc)
+        .list
+      }
+
     Ok(Json.toJson(tweets))
   }
 
@@ -97,7 +118,7 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
   def create = StackAction (parse.json, AuthorityKey -> NormalUser) { implicit request =>
     request.body.validate[TweetForm].map { form =>
       DB.withSession { implicit session =>
-        val tweet = TweetRow(0, loggedIn.id, form.content, null, null)
+        val tweet = TweetRow(0, loggedIn.id, form.content, form.rootId, null, null)
         Tweet.insert(tweet)
         Ok(Json.obj("result" -> "success"))
       }
