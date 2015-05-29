@@ -24,7 +24,7 @@ $ ->
     url = "/json/tweet/list/#{location.pathname.substr('/tweet/list/'.length)}"
 
   ###
-  # ツイート一覧を取得
+  # ツイート一覧VM
   ###
   tweetListVm = TwiTra.vueRoot.$addChild
     el: '#tweet-list'
@@ -39,7 +39,22 @@ $ ->
       @.$emit('reloadTweets')
     methods:
       onReply: (tweet) ->
-        window.TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id)
+        TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id)
+
+      onReTweet: (id) ->
+        data =
+          tweetId: id
+        $.ajax
+          url: '/json/retweet/create'
+          type: 'POST'
+          contentType: 'application/json; charset=UTF-8'
+          dataType: 'json'
+          data: JSON.stringify(data)
+        .done (response) ->
+          getTweets url, (response) =>
+            @.tweets = response
+        .fail (response, status) ->
+          alert('failed.')
 
       showRelation: (rootId) ->
         location.href = '/tweet/relation/' + rootId if rootId != 0
