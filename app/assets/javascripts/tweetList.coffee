@@ -42,6 +42,8 @@ $ ->
         TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id)
 
       onReTweet: (id) ->
+        return if not window.confirm('リツイートします。よろしいですか？')
+
         data =
           tweetId: id
         $.ajax
@@ -50,7 +52,7 @@ $ ->
           contentType: 'application/json; charset=UTF-8'
           dataType: 'json'
           data: JSON.stringify(data)
-        .done (response) ->
+        .done (response) =>
           getTweets url, (response) =>
             @.tweets = response
         .fail (response, status) ->

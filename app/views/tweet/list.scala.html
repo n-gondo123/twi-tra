@@ -7,8 +7,9 @@
             <tr>
                 <th class="text-center col-xs-1">#</th>
                 <th class="text-center col-xs-1">名前</th>
-                <th class="text-center col-xs-6">内容</th>
+                <th class="text-center col-xs-4">内容</th>
                 <th class="text-center col-xs-2">ツイート日時</th>
+                <th class="text-center col-xs-2">リツイート日時</th>
                 <th class="text-center col-xs-1">返信</th>
                 <th class="text-center col-xs-1">リツイート</th>
             </tr>
@@ -19,11 +20,19 @@
                 <td class="text-center"><a href="/tweet/list/{{tweet.member1}}">{{tweet.member1}}</td>
                 <td v-on="click: showRelation(tweet.member2.rootId)">{{tweet.member2.content}}</td>
                 <td class="text-center">{{tweet.member2.insTime | fmtDt}}</td>
+                <td class="text-center">{{tweet.member3 | fmtDt}}</td>
                 <td class="text-center">
-                    <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#myModal" v-on="click: onReply(tweet.member2)">返信</button>
+                    <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#myModal"
+                    v-on="click: onReply(tweet.member2)">
+                        返信
+                    </button>
                 </td>
                 <td class="text-center">
-                    <button class="btn btn-xs btn-success" v-on="click: onReTweet(tweet.member2.id)" v-if="disabled: tweet.member1 !== '@userName'">リツイート</button>
+                    <button class="btn btn-xs btn-success"
+                    v-on="click: onReTweet(tweet.member2.id)"
+                    v-if="tweet.member1 !== '@userName' && tweet.member2.insTime > tweet.member3">
+                        リツイート
+                    </button>
                 </td>
             </tr>
         </tbody>
