@@ -14,7 +14,6 @@ import play.api.Play.current
 
 import play.api.libs.json._
 
-
 object JsonTweetController extends Controller with AuthElement with AuthConfigImpl {
 
   // フォームの値を格納する
@@ -41,6 +40,10 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
 
   implicit def tuple4[A : Writes, B : Writes, C: Writes, D:Writes]: Writes[(A, B, C, D)] = new Writes[(A, B, C, D)] {
     def writes(o: (A, B, C, D)): JsValue = Json.obj("member1" -> o._1, "member2" -> o._2, "member3" -> o._3, "member4" -> o._4)
+  }
+
+  implicit def tuple5[A : Writes, B : Writes, C: Writes, D:Writes, E:Writes]: Writes[(A, B, C, D, E)] = new Writes[(A, B, C, D, E)] {
+    def writes(o: (A, B, C, D, E)): JsValue = Json.obj("member1" -> o._1, "member2" -> o._2, "member3" -> o._3, "member4" -> o._4, "member5" -> o._5)
   }
 
   /**
@@ -116,43 +119,103 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
     }
   }
 
+//  /**
+//   * 一覧表示(フォロワー含む)
+//   */
+//  def all(id: Int) = {
+//    DB.withSession { implicit session =>
+//      Tweet
+//        .leftJoin(Tweet).on { (t1, t2) =>
+//          t1.id === t2.rtId
+//        }
+//        .innerJoin(TwiUser).on { case ((t1, t2), u) =>
+//          t1.userId === u.id
+//        }
+//        .filter { case ((t1, t2), u) =>
+//          (t1.userId === id && t1.rtId === 0) || (t1.userId in Follow.filter(_.userId === id).map(_.followUserId)) && (t1.rtId === 0)
+//        }
+//        .map { case ((t1, t2), u) =>
+////        (u.name, t1, t2.insTime.?.getOrElse(t1.insTime), t1.userId === id || t2.userId.? === id)
+//          (u.name, t1, t2.insTime.?.getOrElse(new Timestamp(0)), t1.userId === id || t2.userId.? === id)
+//        }
+////        .sortBy { case (nm, t1, time, rtFlag) =>
+////          time.desc
+////        }
+//        .list
+//        .sortWith { (a, b) =>
+//          val aTime = if (a._3.getTime > a._2.insTime.getTime) {
+//            a._3
+//          } else {
+//            a._2.insTime
+//          }
+//          val bTime = if (b._3.getTime > a._2.insTime.getTime) {
+//            b._3
+//          } else {
+//            b._2.insTime
+//          }
+//          aTime.getTime > bTime.getTime
+//        }
+//        .map { case (nm, t1, time, rtFlag) =>
+//          val list =
+//            Tweet
+//              .filterNot { t => t.rtId === 0}
+//              .filter { t => t.rtId === t1.id }
+//              .innerJoin(TwiUser).on { (t, u) =>
+//                t.userId === u.id
+//              }
+//              .map { case (t, u) =>
+//                u.name
+//              }
+//              .list
+//          (nm, t1, list, rtFlag)
+//        }
+//      }
+//  }
+
   /**
    * 一覧表示(フォロワー含む)
    */
   def all(id: Int) = {
     DB.withSession { implicit session =>
-      Tweet
-        .leftJoin(Tweet).on { (t1, t2) =>
-          t1.id === t2.rtId
-        }
-        .innerJoin(TwiUser).on { case ((t1, t2), u) =>
-          t1.userId === u.id
-        }
-        .filter { case ((t1, t2), u) =>
-          (t1.userId === id && t1.rtId === 0) || (t1.userId in Follow.filter(_.userId === id).map(_.followUserId)) && (t1.rtId === 0)
-        }
-        .map { case ((t1, t2), u) =>
-//        (u.name, t1, t2.insTime.?.getOrElse(t1.insTime), t1.userId === id || t2.userId.? === id)
-          (u.name, t1, t2.insTime.?.getOrElse(new Timestamp(0)), t1.userId === id || t2.userId.? === id)
-        }
-//        .sortBy { case (nm, t1, time, rtFlag) =>
-//          time.desc
-//        }
-        .list
-        .sortWith { (a, b) =>
-          val aTime = if (a._3.getTime > a._2.insTime.getTime) {
-            a._3
-          } else {
-            a._2.insTime
+      val tweets =
+        Tweet
+          .filter {t =>
+            t.userId === id || (t.userId in Follow.filter(f => f.userId === id && f.flag).map(_.followUserId))
           }
-          val bTime = if (b._3.getTime > a._2.insTime.getTime) {
-            b._3
-          } else {
-            b._2.insTime
+          .leftJoin(Tweet).on { (t1, t2) =>
+            t1.rtId === t2.id
           }
-          aTime.getTime > bTime.getTime
+          .innerJoin(TwiUser).on { case ((t1, t2), u1) =>
+            t1.userId === u1.id
+          }
+          .leftJoin(TwiUser).on { case (((t1, t2), u1), u2) =>
+            t2.userId.? === u2.id
+          }
+          .map { case (((t1, t2), u1), u2) =>
+            (u1.name, t1, u2.name.?, t2.?, t1.userId === id || t2.userId.? === id)
+          }
+          .sortBy { case (nm1, t1, n2, t2, flag) =>
+            t1.insTime.desc
+          }
+          .list
+      tweets
+        .map { case (nm1, t1, nm2, t2, rtFlag) =>
+          val list =
+            Tweet
+              .filterNot { t => t.rtId === 0}
+              .filter { t => t.rtId === t1.id }
+              .innerJoin(TwiUser).on { (t, u) =>
+                t.userId === u.id
+              }
+              .map { case (t, u) =>
+                u.name
+              }
+              .list
+//        (nm1, t1, nm2, t2, list, rtFlag)
+          (nm2.getOrElse(nm1), t2.getOrElse(t1), t1.insTime, list, rtFlag)
         }
-      }
+        .distinct
+    }
   }
 
   /**
