@@ -16,17 +16,17 @@ import play.api.libs.json._
 object JsonReTweetController extends Controller with AuthElement with AuthConfigImpl {
 
   // フォームの値を格納する
-  case class ReTweetForm(tweetId: Int)
+  case class ReTweetForm(reTweetId: Int)
 
   // formのデータとケースクラスの変換を行う
   val reTweetForm = Form(
     mapping(
-      "tweetId" -> number
+      "reTweetId" -> number
     )(ReTweetForm.apply)(ReTweetForm.unapply)
   )
 
   implicit val reTweetFromReads = Json.reads[ReTweetForm]
-  implicit val reTweetRowWriter = Json.writes[ReTweetRow]
+  implicit val reTweetRowWriter = Json.writes[TweetRow]
 
   /**
    * Tweet用JSON API
@@ -34,8 +34,8 @@ object JsonReTweetController extends Controller with AuthElement with AuthConfig
   def create = StackAction (parse.json, AuthorityKey -> NormalUser) { implicit request =>
     request.body.validate[ReTweetForm].map { form =>
       DB.withSession { implicit session =>
-        val tweet = ReTweetRow(0, form.tweetId, loggedIn.id, null, null)
-        ReTweet.insert(tweet)
+        val tweet = TweetRow(0, loggedIn.id, null, 0, form.reTweetId, null, null)
+        Tweet.insert(tweet)
         Ok(Json.obj("result" -> "success"))
       }
     }.recoverTotal { e =>

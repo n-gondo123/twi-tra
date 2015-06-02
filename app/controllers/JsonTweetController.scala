@@ -39,6 +39,10 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
     def writes(o: (A, B, C)): JsValue = Json.obj("member1" -> o._1, "member2" -> o._2, "member3" -> o._3)
   }
 
+  implicit def tuple4[A : Writes, B : Writes, C: Writes, D:Writes]: Writes[(A, B, C, D)] = new Writes[(A, B, C, D)] {
+    def writes(o: (A, B, C, D)): JsValue = Json.obj("member1" -> o._1, "member2" -> o._2, "member3" -> o._3, "member4" -> o._4)
+  }
+
   /**
    * 一覧表示(自分のみ)
    */
@@ -47,7 +51,8 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
 //      self(kind)
       all(loggedIn.id)
     } else {
-      self(kind)
+      all(loggedIn.id)
+//      self(kind)
     }
     Ok(Json.toJson(tweets))
   }
@@ -117,23 +122,22 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
   def all(id: Int) = {
     DB.withSession { implicit session =>
       Tweet
-        .filter { t =>
-          (t.userId in
-            Follow
-              .filter(_.userId === id)
-              .map(_.followUserId)
-            ) || (t.userId === id) ||
-            (t.id in ReTweet.filter(_.userId === id).map(_.tweetId))
+        .leftJoin(Tweet).on { (t1, t2) =>
+          t1.id === t2.rtId
         }
-        .leftJoin(ReTweet).on { (t, rt) =>
-          t.id === rt.tweetId
+        .innerJoin(TwiUser).on { case ((t1, t2), u) =>
+          t1.userId === u.id
         }
-        .innerJoin(TwiUser).on { case ((t, rt), u) =>
-          t.userId === u.id
+        .filter { case ((t1, t2), u) =>
+          (t1.userId === id && t1.rtId === 0) || (t1.userId in Follow.filter(_.userId === id).map(_.followUserId)) && (t1.rtId === 0)
         }
-        .map { case ((t, rt), u) =>
-          (u.name, t, rt.insTime.?.getOrElse(new Timestamp(0)))
+        .map { case ((t1, t2), u) =>
+//        (u.name, t1, t2.insTime.?.getOrElse(t1.insTime), t1.userId === id || t2.userId.? === id)
+          (u.name, t1, t2.insTime.?.getOrElse(new Timestamp(0)), t1.userId === id || t2.userId.? === id)
         }
+//        .sortBy { case (nm, t1, time, rtFlag) =>
+//          time.desc
+//        }
         .list
         .sortWith { (a, b) =>
           val aTime = if (a._3.getTime > a._2.insTime.getTime) {
@@ -148,7 +152,7 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
           }
           aTime.getTime > bTime.getTime
         }
-    }
+      }
   }
 
   /**
@@ -157,7 +161,7 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
   def create = StackAction (parse.json, AuthorityKey -> NormalUser) { implicit request =>
     request.body.validate[TweetForm].map { form =>
       DB.withSession { implicit session =>
-        val tweet = TweetRow(0, loggedIn.id, form.content, form.rootId, null, null)
+        val tweet = TweetRow(0, loggedIn.id, Some(form.content), form.rootId, 0, null, null)
         Tweet.insert(tweet)
         Ok(Json.obj("result" -> "success"))
       }

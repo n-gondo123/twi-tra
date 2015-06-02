@@ -16,7 +16,7 @@
         </thead>
         <tbody>
             <tr v-repeat="tweet: tweets | limit" v-cloak>
-                <td class="text-center">{{tweet.member2.rootId}}</td>
+                <td class="text-center">{{tweet.member2.id}}</td>
                 <td class="text-center"><a href="/tweet/list/{{tweet.member1}}">{{tweet.member1}}</td>
                 <td v-on="click: showRelation(tweet.member2.rootId)">{{tweet.member2.content}}</td>
                 <td class="text-center">{{tweet.member2.insTime | fmtDt}}</td>
@@ -30,7 +30,7 @@
                 <td class="text-center">
                     <button class="btn btn-xs btn-success"
                     v-on="click: onReTweet(tweet.member2.id)"
-                    v-if="tweet.member1 !== '@userName' && tweet.member2.insTime > tweet.member3">
+                    v-if="!tweet.member4">
                         リツイート
                     </button>
                 </td>

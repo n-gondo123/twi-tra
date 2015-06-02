@@ -6,7 +6,6 @@ $ ->
     $.ajax
       url: url
       type: 'GET'
-      contentType: 'application/json; charset=UTF-8'
       dataType: 'json'
     .done (response) ->
       callback(response)
@@ -42,10 +41,10 @@ $ ->
         TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id)
 
       onReTweet: (id) ->
-        return if not window.confirm('リツイートします。よろしいですか？')
+        return unless window.confirm('リツイートします。よろしいですか？')
 
         data =
-          tweetId: id
+          reTweetId: id
         $.ajax
           url: '/json/retweet/create'
           type: 'POST'
