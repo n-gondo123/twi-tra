@@ -21,8 +21,7 @@
                 <td v-on="click: showRelation(tweet.member2.rootId)">{{tweet.member2.content}}</td>
                 <td class="text-center">{{tweet.member2.insTime | fmtDt}}</td>
                 <td class="text-center">
-                    <!-- <span v-if="tweet.member3.length > 0">{{tweet.member3 | json}}さんがリツイートしました</span> -->
-                    <span>{{tweet.member4 | json}}さんがRTしました</span>
+                    <span v-if="tweet.member4.length > 0">{{tweet.member4 | tail さん}}が<br />リツイートしました</span>
                 </td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#myModal"

@@ -39,6 +39,15 @@ Vue.filter 'limit', (array) ->
   array.filter (val, idx) =>
     idx < Number(@.limit) || 0
 
+Vue.filter 'tail', (array, str) ->
+  max = array.length - 1
+  array.map (val, idx) ->
+    if idx is max
+      val + str + ' '
+    else
+      val + str + ', '
+  .join ''
+
 $ ->
   TwiTra.vueRoot = new Vue()
 

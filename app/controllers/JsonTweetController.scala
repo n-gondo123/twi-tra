@@ -34,14 +34,6 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
     def writes(o: (A, B)): JsValue = Json.obj("member1" -> o._1, "member2" -> o._2)
   }
 
-  implicit def tuple3[A : Writes, B : Writes, C: Writes]: Writes[(A, B, C)] = new Writes[(A, B, C)] {
-    def writes(o: (A, B, C)): JsValue = Json.obj("member1" -> o._1, "member2" -> o._2, "member3" -> o._3)
-  }
-
-  implicit def tuple4[A : Writes, B : Writes, C: Writes, D:Writes]: Writes[(A, B, C, D)] = new Writes[(A, B, C, D)] {
-    def writes(o: (A, B, C, D)): JsValue = Json.obj("member1" -> o._1, "member2" -> o._2, "member3" -> o._3, "member4" -> o._4)
-  }
-
   implicit def tuple5[A : Writes, B : Writes, C: Writes, D:Writes, E:Writes]: Writes[(A, B, C, D, E)] = new Writes[(A, B, C, D, E)] {
     def writes(o: (A, B, C, D, E)): JsValue = Json.obj("member1" -> o._1, "member2" -> o._2, "member3" -> o._3, "member4" -> o._4, "member5" -> o._5)
   }
@@ -51,11 +43,9 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
    */
   def list(kind: String) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     val tweets = if (kind == "all") {
-//      self(kind)
       all(loggedIn.id)
     } else {
-      all(loggedIn.id)
-//      self(kind)
+      self(loggedIn.id, kind)
     }
     Ok(Json.toJson(tweets))
   }
@@ -83,36 +73,45 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
   /**
    * 一覧表示(対象者のみ)
    */
-  def self(name: String) = {
+  def self(id: Int, name: String) = {
     DB.withSession { implicit session =>
       TwiUser.filter(_.name === name).firstOption.map { user =>
-        Tweet
-          .filter { t =>
-            (t.userId === user.id) || (t.id in ReTweet.filter(_.userId === user.id).map(_.tweetId))
+        val tweets =
+          Tweet
+            .filter {t =>
+            t.userId === user.id
           }
-          .leftJoin(ReTweet).on { (t, rt) =>
-            t.id === rt.tweetId && rt.userId === user.id
+            .leftJoin(Tweet).on { (t1, t2) =>
+            t1.rtId === t2.id
           }
-          .innerJoin(TwiUser).on { case ((t, rt), u) =>
-            t.userId === u.id
+            .map { case (t1, t2) =>
+            (t1, t2.?)
           }
-          .map { case ((t, rt), u) =>
-            (u.name, t, rt.insTime.?.getOrElse(new Timestamp(0)))
+            .sortBy { case (t1, t2) =>
+            t1.insTime.desc
           }
-          .list
-          .sortWith { (a, b) =>
-            val aTime = if (a._3.getTime > a._2.insTime.getTime) {
-              a._3
-            } else {
-              a._2.insTime
+            .list
+        val users =
+          TwiUser
+            .map(u => u.id -> u.name)
+            .toMap
+
+        tweets
+          .map { case (t1, t2) =>
+          t2.getOrElse(t1)
+        }
+          .distinct
+          .map { t1 =>
+          val list =
+            Tweet
+              .filter { t => t.rtId === t1.id }
+              .innerJoin(TwiUser).on { (t, u) =>
+              t.userId === u.id
             }
-            val bTime = if (b._3.getTime > a._2.insTime.getTime) {
-              b._3
-            } else {
-              b._2.insTime
-            }
-            aTime.getTime > bTime.getTime
-          }
+              .list
+
+          (users.get(t1.userId), t1, t1.insTime, list.map(_._2.name), !list.exists(_._2.id == id) && t1.userId != id)
+        }
       }.getOrElse {
         List()
       }
@@ -192,19 +191,17 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
             t1.insTime.desc
           }
           .list
+      val users =
+        TwiUser
+          .map(u => u.id -> u.name)
+          .toMap
+
       tweets
         .map { case (t1, t2) =>
           t2.getOrElse(t1)
         }
         .distinct
-//        .filter { case (t1, t2, time) =>
-//          t1.rtId == 0
-//        }
-//        .sortWith { (a, b) =>
-//          a._3.getOrElse(a._1.insTime).getTime > b._3.getOrElse(b._1.insTime).getTime
-////          a._3.getTime > b._3.getTime
-//        }
-        .map { case (t1) =>
+        .map { t1 =>
           val list =
             Tweet
               .filter { t => t.rtId === t1.id }
@@ -213,11 +210,8 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
               }
               .list
 
-          (t1.userId, t1, t1.insTime, list.map(_._2.name), !list.exists(_._2.id == id) && t1.userId != id)
+          (users.get(t1.userId), t1, t1.insTime, list.map(_._2.name), !list.exists(_._2.id == id) && t1.userId != id)
         }
-//        .sortBy { case (nm, t, time, list, flag) =>
-//          t.insTime.desc
-//        }
     }
   }
 
