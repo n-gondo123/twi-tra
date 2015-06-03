@@ -4,7 +4,7 @@
 <div id="navi">
     <ul class="nav nav-tabs">
         @if(userName.nonEmpty) {
-            <li><a href="#" data-toggle="modal" data-target="#myModal" v-on="click: onNewTweet(0)">
+            <li><a href="#" data-toggle="modal" data-target="#myModal" v-on="click: onNewTweet">
               ツイートする
             </a></li>
             <li v-class="active: pathname === '@routes.Application.home()'"><a href="@routes.Application.home()">タイムライン</a></li>

@@ -41,7 +41,7 @@ $ ->
         TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id)
 
       onReTweet: (id) ->
-        return unless window.confirm('リツイートします。よろしいですか？')
+        return unless confirm('リツイートします。よろしいですか？')
 
         data =
           reTweetId: id

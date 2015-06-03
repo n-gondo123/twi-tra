@@ -64,5 +64,5 @@ $ ->
     data:
       pathname: location.pathname
     methods:
-      onNewTweet: (rootId) ->
-        TwiTra.vueRoot.$broadcast('showTweetFrom', rootId)
+      onNewTweet: ->
+        TwiTra.vueRoot.$broadcast('showTweetForm', 0)

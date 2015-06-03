@@ -37,7 +37,7 @@ $ ->
           alert('failed.')
 
       onClear: (e) ->
-        return if (@.content.length == 0)
+        return if @.content.length == 0
         if confirm('入力内容をクリアします。よろしいですか？')
           @.content = ''
           $('#tweet-input').focus()
