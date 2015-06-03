@@ -14,8 +14,8 @@ create table TWI_USER (
 create table TWEET (
     ID int primary key auto_increment,
     USER_ID int not null,
-    CONTENT varchar(140) not null,
-    ROOT_ID int not null,
+    CONTENT varchar(140),
+    ROOT_ID int not null default 0,
     RT_ID int not null default 0,
     INS_TIME timestamp not null,
     UPD_TIME timestamp,

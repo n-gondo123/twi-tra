@@ -46,7 +46,7 @@ $ ->
         data =
           reTweetId: id
         $.ajax
-          url: '/json/retweet/create'
+          url: '/json/tweet/retweet'
           type: 'POST'
           contentType: 'application/json; charset=UTF-8'
           dataType: 'json'
