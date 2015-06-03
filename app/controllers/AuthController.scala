@@ -28,7 +28,7 @@ trait AuthConfigImpl extends AuthConfig {
   /**
    * ユーザを識別するIDの型です。String や Int や Long などが使われるでしょう。
    */
-  type Id = String
+  type Id = Int
 
   /**
    * あなたのアプリケーションで認証するユーザを表す型です。
@@ -58,9 +58,9 @@ trait AuthConfigImpl extends AuthConfig {
    * ユーザIDからUserブジェクトを取得するアルゴリズムを指定します。
    * 任意の処理を記述してください。
    */
-  def resolveUser(name: Id)(implicit ctx: ExecutionContext): Future[Option[User]] = {
+  def resolveUser(id: Id)(implicit ctx: ExecutionContext): Future[Option[User]] = {
     val user = DB.withSession { implicit rs =>
-      TwiUser.filter(_.name === name).firstOption
+      TwiUser.filter(_.id === id).firstOption
     }
 
     Future.successful(user)

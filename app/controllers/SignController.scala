@@ -47,9 +47,9 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
         Future.successful(BadRequest(views.html.sign(error, "入力形式が正しくありません", "")))
       },
       form => {
-        if (validate(form)) {
-          gotoLoginSucceeded(form.name)
-        } else {
+        existsOrEmpty(form).map { user =>
+          gotoLoginSucceeded(user.id)
+        }.getOrElse {
           Future.successful(Ok(views.html.sign(signForm.fill(form), "ユーザー名、またはパスワードが違います", "")))
         }
       }
@@ -59,12 +59,11 @@ object SignController extends Controller with LoginLogout with OptionalAuthEleme
   /**
    * ログインフォームvalidation
    */
-  def validate(signForm: SignForm) = {
+  def existsOrEmpty(signForm: SignForm) = {
     DB.withSession { implicit session =>
       TwiUser
-        .filter(_.name === signForm.name)
+        .filter(u => u.name === signForm.name && u.password === encryptAES(signForm.password))
         .firstOption
-        .exists(_.password == encryptAES(signForm.password))
     }
   }
 
