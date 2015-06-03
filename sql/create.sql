@@ -1,7 +1,6 @@
 drop table FOLLOW;
 drop table TWEET;
 drop table TWI_USER;
-drop table RE_TWEET;
 
 create table TWI_USER (
     ID int primary key auto_increment,
