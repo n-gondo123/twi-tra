@@ -37,16 +37,16 @@ $ ->
     ready: ->
       @.$emit('reloadTweets')
     methods:
-      onReply: (tweet) ->
-        TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id)
+      onReply: (name, tweet) ->
+        TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id, name)
 
       onReTweet: (id) ->
-        return unless window.confirm('リツイートします。よろしいですか？')
+        return unless confirm('リツイートします。よろしいですか？')
 
         data =
           reTweetId: id
         $.ajax
-          url: '/json/retweet/create'
+          url: '/json/tweet/retweet'
           type: 'POST'
           contentType: 'application/json; charset=UTF-8'
           dataType: 'json'

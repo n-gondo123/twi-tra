@@ -1,20 +1,26 @@
 @(userName: String)
 
-<div id="navi" style="margin-bottom: 15px;">
+<nav class="navbar">
+<div id="navi">
     <ul class="nav nav-tabs">
         @if(userName.nonEmpty) {
-            <li><a href="#" data-toggle="modal" data-target="#myModal" v-on="click: onNewTweet(0)">
+            <li><a href="#" data-toggle="modal" data-target="#myModal" v-on="click: onNewTweet">
               ツイートする
             </a></li>
             <li v-class="active: pathname === '@routes.Application.home()'"><a href="@routes.Application.home()">タイムライン</a></li>
             <li v-class="active: pathname === '@routes.TwiUserController.list()'"><a href="@routes.TwiUserController.list()">ユーザー</a></li>
-            <li v-class="active: pathname === '@routes.TweetController.list(userName)'"><a href="@routes.TweetController.list(userName)">ツイート</a></li>
-            <li v-class="active: pathname === '@routes.TwiUserController.edit()'"><a href="@routes.TwiUserController.edit()">アカウント編集</a></li>
-            <li v-class="active: pathname === '@routes.SignController.signOut()'"><a href="@routes.SignController.signOut()">サインアウト</a></li>
+            <li v-class="active: pathname === '@routes.TweetController.list(userName)'"><a href="@routes.TweetController.list(userName)">マイツイート</a></li>
+            <li>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@userName&nbsp;<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li v-class="active: pathname === '@routes.TwiUserController.edit()'"><a href="@routes.TwiUserController.edit()">アカウント編集</a></li>
+                    <li><a href="@routes.SignController.signOut()">サインアウト</a></li>
+                </ul>
+            </li>
         } else {
             <li><a href="@routes.Application.index()">トップ</a></li>
             <li v-class="active: pathname === '@routes.TwiUserController.edit()'"><a href="@routes.TwiUserController.edit()">新規登録</a></li>
-            @*<li v-class="active: true"><a href="@routes.TwiUserController.edit()">新規登録</a></li>*@
         }
     </ul>
 </div>
+</nav>

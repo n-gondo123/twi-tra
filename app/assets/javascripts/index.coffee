@@ -39,6 +39,10 @@ Vue.filter 'limit', (array) ->
   array.filter (val, idx) =>
     idx < Number(@.limit) || 0
 
+###
+# 表示用フィルター
+# strとカンマ区切りで表示
+###
 Vue.filter 'tail', (array, str) ->
   max = array.length - 1
   array.map (val, idx) ->
@@ -49,6 +53,9 @@ Vue.filter 'tail', (array, str) ->
   .join ''
 
 $ ->
+  ###
+  # ルートVM
+  ###
   TwiTra.vueRoot = new Vue()
 
   TwiTra.vueRoot.$addChild
@@ -56,5 +63,5 @@ $ ->
     data:
       pathname: location.pathname
     methods:
-      onNewTweet: (rootId) ->
-        TwiTra.vueRoot.$broadcast('showTweetFrom', rootId)
+      onNewTweet: ->
+        TwiTra.vueRoot.$broadcast('showTweetForm', 0)
