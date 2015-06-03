@@ -37,8 +37,8 @@ $ ->
     ready: ->
       @.$emit('reloadTweets')
     methods:
-      onReply: (tweet) ->
-        TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id)
+      onReply: (name, tweet) ->
+        TwiTra.vueRoot.$broadcast('showTweetForm', tweet.rootId || tweet.id, name)
 
       onReTweet: (id) ->
         return unless confirm('リツイートします。よろしいですか？')

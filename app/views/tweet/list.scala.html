@@ -14,16 +14,16 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-repeat="tweet: tweets | limit" v-cloak>
+            <tr v-repeat="tweet: tweets | limit" v-class="warning: tweet.member2.content.indexOf('@@@userName ') === 0" v-cloak>
                 <td class="text-center"><a href="/tweet/list/{{tweet.member1}}">{{tweet.member1}}</td>
-                <td v-on="click: showRelation(tweet.member2.rootId)">{{tweet.member2.content}}</td>
+                <td v-class="pointer: tweet.member2.rootId !== 0" v-on="click: showRelation(tweet.member2.rootId)">{{tweet.member2.content}}</td>
                 <td class="text-center">{{tweet.member2.insTime | fmtDt}}</td>
                 <td class="text-center">
                     <span v-if="tweet.member4.length > 0">{{tweet.member4 | tail さん}}がリツイートしました</span>
                 </td>
                 <td class="text-center">
                     <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#myModal"
-                    v-on="click: onReply(tweet.member2)">
+                    v-on="click: onReply(tweet.member1, tweet.member2)">
                         返信
                     </button>
                 </td>

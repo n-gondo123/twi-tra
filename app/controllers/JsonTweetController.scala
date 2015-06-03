@@ -53,7 +53,7 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
    */
   def list(kind: String) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     val tweets = if (kind == "all") {
-      all(loggedIn.id)
+      all(loggedIn.id, loggedIn.name)
     } else {
       self(loggedIn.id, kind)
     }
@@ -140,12 +140,12 @@ object JsonTweetController extends Controller with AuthElement with AuthConfigIm
   /**
    * 一覧表示(フォロワー含む)
    */
-  def all(id: Int) = {
+  def all(id: Int, name: String) = {
     DB.withSession { implicit session =>
       val tweets =
         Tweet
           .filter {t =>
-            t.userId === id || (t.userId in Follow.filter(f => f.userId === id && f.flag).map(_.followUserId))
+            t.userId === id || (t.userId in Follow.filter(f => f.userId === id && f.flag).map(_.followUserId)) || t.content.indexOf("@" + name + " ") === 0
           }
           .leftJoin(Tweet).on { (t1, t2) =>
             t1.rtId === t2.id

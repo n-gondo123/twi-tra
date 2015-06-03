@@ -52,7 +52,6 @@ Vue.filter 'tail', (array, str) ->
       val + str + ', '
   .join ''
 
-
 $ ->
   ###
   # ルートVM

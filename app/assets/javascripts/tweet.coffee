@@ -16,8 +16,9 @@ $ ->
       @.$watch 'content', (value) ->
         @.disabled = value.replace(/[ 　\r\n]/g, '').length == 0
 
-      @.$on 'showTweetForm', (rootId) ->
+      @.$on 'showTweetForm', (rootId, name) ->
         @.rootId = rootId
+        @.content += "@#{name} " if name
 
     methods:
       onTweet: (e) ->
