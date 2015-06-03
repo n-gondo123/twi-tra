@@ -15,5 +15,5 @@ dist
 /.settings
 
 # personal add
-/app/models
+#/app/models
 /**/*.bat
